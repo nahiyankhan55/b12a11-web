@@ -2,7 +2,7 @@ import { Outlet } from "react-router";
 
 const Main = () => {
   return (
-    <div>
+    <div className="w-full">
       <Outlet></Outlet>
     </div>
   );
