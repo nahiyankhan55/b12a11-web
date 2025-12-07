@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { Divider, TextField, InputAdornment, MenuItem } from "@mui/material";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
+import { Link } from "react-router";
+import { HeadProvider, Title } from "react-head";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -122,6 +124,9 @@ const RegisterPage = () => {
 
   return (
     <div className="w-full flex flex-col items-center sm:gap-5 gap-2 px-5 py-10">
+      <HeadProvider>
+        <Title>Register || ScholarStream</Title>
+      </HeadProvider>
       <div className="flex flex-col gap-1 items-center text-center md:mt-8 mt-4">
         <h3 className="md:text-3xl text-2xl italic font-medium">Register</h3>
         <p className="text-base font-medium text-cyan-600">
@@ -131,7 +136,7 @@ const RegisterPage = () => {
 
       <Divider orientation="horizontal" variant="middle" flexItem></Divider>
 
-      <div className="flex flex-col gap-4 lg:w-3/5 md:w-8/12 sm:w-10/12 ">
+      <div className="flex flex-col gap-4 lg:w-3/5 md:w-8/12 sm:w-10/12 w-full">
         <form
           onSubmit={handleRegisterSubmit}
           className="flex flex-col justify-center gap-4 mt-4 w-full"
@@ -227,6 +232,15 @@ const RegisterPage = () => {
           <FcGoogle className="text-2xl" />
           Google
         </button>
+        <p className="font-medium">
+          Old user?{" "}
+          <Link
+            className="font-semibold text-purple-700 hover:text-sky-600 duration-300"
+            to={"/login"}
+          >
+            Login
+          </Link>
+        </p>
       </div>
     </div>
   );

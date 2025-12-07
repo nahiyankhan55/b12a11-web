@@ -6,6 +6,7 @@ import AllScholarships from "../Layouts/Main/AllScholarships/AllScholarships";
 import ScholarshipDetails from "../Layouts/Main/ScholarshipDetails/ScholarshipDetails";
 import LoginPage from "../Layouts/Main/Auth/LoginPage";
 import RegisterPage from "../Layouts/Main/Auth/RegisterPage";
+import ForgotPasswordPage from "../Layouts/Main/Auth/ForgotPasswordPage";
 import CheckoutPayment from "../Layouts/Main/Payment/CheckoutPayment";
 import PaymentSuccess from "../Layouts/Main/Payment/PaymentSuccess";
 import PaymentFailed from "../Layouts/Main/Payment/PaymentFailed";
@@ -53,6 +54,10 @@ const WebRouter = () => {
             {
               path: "/register",
               element: <RegisterPage></RegisterPage>,
+            },
+            {
+              path: "/forgot",
+              element: <ForgotPasswordPage></ForgotPasswordPage>,
             },
             // payment routes
             {

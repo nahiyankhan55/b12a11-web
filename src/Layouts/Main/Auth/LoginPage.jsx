@@ -7,6 +7,7 @@ import { Divider, TextField, InputAdornment } from "@mui/material";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router";
+import { HeadProvider, Title } from "react-head";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -93,6 +94,9 @@ const LoginPage = () => {
 
   return (
     <div className="w-full flex flex-col items-center sm:gap-5 gap-2 px-5 py-10">
+      <HeadProvider>
+        <Title>Login || ScholarStream</Title>
+      </HeadProvider>
       <div className="flex flex-col gap-1 items-center text-center md:mt-8 mt-4">
         <h3 className="md:text-3xl text-2xl italic font-medium">Login</h3>
         <p className="text-base font-medium text-cyan-600">
