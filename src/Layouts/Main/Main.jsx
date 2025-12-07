@@ -5,6 +5,7 @@ const Main = () => {
   return (
     <div className="w-full">
       <MainNav></MainNav>
+      <div className="py-8"></div>
       <Outlet></Outlet>
     </div>
   );

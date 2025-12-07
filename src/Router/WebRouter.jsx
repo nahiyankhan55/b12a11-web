@@ -1,8 +1,9 @@
-import { RouterProvider, createBrowserRouter } from "react-router";
+import { Navigate, RouterProvider, createBrowserRouter } from "react-router";
 import ErrorPage from "./ErrorPage";
 import Main from "../Layouts/Main/Main";
 import Home from "../Layouts/Main/Home/Home";
 import AllScholarships from "../Layouts/Main/AllScholarships/AllScholarships";
+import About from "../Layouts/Main/About/About";
 import ScholarshipDetails from "../Layouts/Main/ScholarshipDetails/ScholarshipDetails";
 import LoginPage from "../Layouts/Main/Auth/LoginPage";
 import RegisterPage from "../Layouts/Main/Auth/RegisterPage";
@@ -42,6 +43,10 @@ const WebRouter = () => {
             {
               path: "/all-scholarships",
               element: <AllScholarships></AllScholarships>,
+            },
+            {
+              path: "/about",
+              element: <About></About>,
             },
             {
               path: "/scholarship-details/:id",
@@ -85,6 +90,10 @@ const WebRouter = () => {
           children: [
             {
               path: "/dashboard",
+              element: <Navigate to={"/dashboard/home"}></Navigate>,
+            },
+            {
+              path: "/dashboard/home",
               element: <DashboardHome></DashboardHome>,
             },
             // admin
