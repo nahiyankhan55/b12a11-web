@@ -11,8 +11,10 @@ import { toast } from "react-toastify";
 import WebContext from "./WebContext";
 import PropTypes from "prop-types";
 import auth from "../Firebase/firebase.config";
+import useAxiosPublic from "../Hook/useAxiosPublic";
 
 const WebContextProvider = ({ children }) => {
+  const AxiosPublic = useAxiosPublic();
   // User Info
   const [user, setUser] = useState(null);
   const [userName, setUserName] = useState("");
@@ -40,27 +42,43 @@ const WebContextProvider = ({ children }) => {
   // Handle Logout
   const handleLogout = async () => {
     setLoading(true);
-    try {
-      await signOut(auth);
-      toast.info(`Logout Successful`, {
-        position: "top-right",
-        autoClose: 2000,
+    return AxiosPublic.post("/logout")
+      .then(() => {
+        signOut(auth);
+      })
+      .then(() => {
+        toast.warn(`Logout Successful`, {
+          position: "top-center",
+          autoClose: 2000,
+          closeButton: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      })
+      .catch((error) => {
+        toast.error(`${error.message}`, {
+          position: "top-right",
+          autoClose: 2000,
+          closeButton: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
       });
-    } catch (error) {
-      toast.error(`${error.message}`, {
-        position: "top-right",
-        autoClose: 2000,
-      });
-    }
   };
 
   // User Observer
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
         setUserName(currentUser.displayName);
         setUserImage(currentUser.photoURL);
+        // get token and store it via httpOnly cookie
+        await AxiosPublic.post(
+          "/jwt",
+          { email: currentUser?.email },
+          { withCredentials: true }
+        );
       } else {
         setUser(null);
         setUserName("");
