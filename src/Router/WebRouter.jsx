@@ -106,6 +106,10 @@ const WebRouter = () => {
               element: <ManageScholarships></ManageScholarships>,
             },
             {
+              path: "/dashboard/update-scholarship/:id",
+              element: <ManageScholarships></ManageScholarships>,
+            },
+            {
               path: "/dashboard/manage-users",
               element: <ManageUsers></ManageUsers>,
             },
