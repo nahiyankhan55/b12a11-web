@@ -13,6 +13,7 @@ import DataLoader from "../../../../Components/DataLoader";
 import { Button } from "@mui/material";
 import { useContext } from "react";
 import WebContext from "../../../../Context/WebContext";
+import { Link } from "react-router";
 
 const columnHelper = createColumnHelper();
 
@@ -110,14 +111,12 @@ const ManageScholarships = () => {
       id: "update",
       header: "Update",
       cell: (info) => (
-        <button
-          onClick={() =>
-            (window.location.href = `/dashboard/update-scholarship/${info.row.original._id}`)
-          }
+        <Link
+          to={`/dashboard/update-scholarship/${info.row.original._id}`}
           className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded text-sm"
         >
           Update
-        </button>
+        </Link>
       ),
     }),
     columnHelper.display({

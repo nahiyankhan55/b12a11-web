@@ -112,6 +112,7 @@ const AddScholarship = () => {
         serviceCharge,
         applicationDeadline,
         scholarshipPostDate,
+        postedDate: new Date().toISOString(),
         postedUserEmail: user?.email || "unknown",
       };
 
@@ -134,7 +135,7 @@ const AddScholarship = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto md:p-6 p-2 bg-white rounded-md shadow-sm w-full">
+    <div className="max-w-4xl mx-auto md:p-6 p-1 bg-white rounded-md shadow-lg w-full">
       <h2 className="sm:text-2xl text-xl md:text-3xl font-semibold mb-2">
         Add Scholarship
       </h2>
