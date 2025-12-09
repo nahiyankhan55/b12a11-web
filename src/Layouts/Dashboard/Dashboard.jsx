@@ -32,7 +32,7 @@ const Dashboard = () => {
         <SideNav role={role}></SideNav>
       </div>
 
-      <div className="col-span-10 p-6 overflow-y-auto">
+      <div className="col-span-10 overflow-y-auto">
         <Outlet></Outlet>
       </div>
     </div>

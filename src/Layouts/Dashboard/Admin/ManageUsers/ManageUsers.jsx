@@ -127,16 +127,20 @@ const ManageUsers = () => {
             {row.original.role === "Moderator" && (
               <Button
                 color={
-                  user.email === row.original?.moderatorFor
+                  row.original?.moderatorFor ||
+                  user?.email === row.original?.moderatorFor
                     ? "inherit"
                     : "primary"
                 }
                 size="small"
                 variant="contained"
-                disabled={user.email === row.original?.moderatorFor}
+                disabled={
+                  user?.email === row.original?.moderatorFor ||
+                  row.original?.moderatorFor
+                }
                 onClick={() => handleAssign(row.original.email)}
               >
-                {user.email === row.original?.moderatorFor
+                {user?.email === row.original?.moderatorFor
                   ? "Assigned"
                   : "Assign"}
               </Button>
