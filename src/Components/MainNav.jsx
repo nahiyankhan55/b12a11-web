@@ -11,7 +11,7 @@ const MainNav = () => {
   const [navShow, setShowNav] = useState(false);
   const navShowHide = () => setShowNav((prev) => !prev);
   // context
-  const { user, userImage, handleLogout, theme, toggleTheme } =
+  const { user, userName, userImage, handleLogout, theme, toggleTheme } =
     useContext(WebContext);
   // profile func
   const [showProfile, setShowProfile] = useState(false);
@@ -180,7 +180,7 @@ const MainNav = () => {
                   }`}
                 >
                   <h3 className="text-lg text-purple-700 font-bold">
-                    {user.displayName}
+                    {user.displayName || userName}
                   </h3>
                   <p className="text-lg text-gray-600 font-medium">
                     {user.email}

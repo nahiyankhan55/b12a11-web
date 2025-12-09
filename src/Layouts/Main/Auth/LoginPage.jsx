@@ -6,12 +6,13 @@ import { toast } from "react-toastify";
 import { Divider, TextField, InputAdornment } from "@mui/material";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { HeadProvider, Title } from "react-head";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const AxiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
 
   const { handleLoginEmail, handleGoogle, setUser, setUserName, setUserImage } =
     useContext(WebContext);
@@ -40,7 +41,7 @@ const LoginPage = () => {
         setUser(loggedUser);
         setUserName(loggedUser.displayName);
         setUserImage(loggedUser.photoURL);
-
+        navigate("/");
         toast.success("Login Successful", {
           position: "top-right",
           autoClose: 2000,
@@ -83,6 +84,7 @@ const LoginPage = () => {
             .then((res) => console.log("new user added", res.data))
             .catch((err) => console.log(err));
         }
+        navigate("/");
       })
       .catch((error) => {
         toast.error(`Google Login Error: ${error.message}`, {

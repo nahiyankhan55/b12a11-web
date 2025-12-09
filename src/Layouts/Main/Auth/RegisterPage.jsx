@@ -6,12 +6,14 @@ import { toast } from "react-toastify";
 import { Divider, TextField, InputAdornment, MenuItem } from "@mui/material";
 import { MdVisibility, MdVisibilityOff } from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { HeadProvider, Title } from "react-head";
+import { updateProfile } from "firebase/auth";
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const AxiosPublic = useAxiosPublic();
+  const navigate = useNavigate();
 
   const {
     handleRegisterEmail,
@@ -54,11 +56,14 @@ const RegisterPage = () => {
     handleRegisterEmail(email, password)
       .then((result) => {
         const newUser = result.user;
-
+        updateProfile(newUser.user, {
+          displayName: name,
+          photoURL: image,
+        });
         setUser(newUser);
         setUserName(name);
         setUserImage(image || newUser.photoURL || "");
-
+        navigate("/");
         toast.success("Registration Successful", {
           position: "top-right",
           autoClose: 2000,
@@ -113,6 +118,7 @@ const RegisterPage = () => {
             .then((res) => console.log("added new student", res))
             .catch((err) => console.log(err));
         }
+        navigate("/");
       })
       .catch((error) => {
         toast.error(`Google Login Error: ${error.message}`, {
