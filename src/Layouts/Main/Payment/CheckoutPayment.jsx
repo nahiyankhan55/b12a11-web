@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from "react-router";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import {
   Elements,
@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import useAxiosPublic from "../../../Hook/useAxiosPublic";
 import { toast } from "react-toastify";
+import WebContext from "../../../Context/WebContext";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PK);
 // example: pk_test_123...
@@ -25,6 +26,7 @@ const CheckoutForm = () => {
   const axiosPublic = useAxiosPublic();
   const stripe = useStripe();
   const elements = useElements();
+  const { user } = useContext(WebContext);
 
   const location = useLocation();
   const scholarship = location.state?.scholarship;
@@ -63,7 +65,7 @@ const CheckoutForm = () => {
       payment_method: {
         card: card,
         billing_details: {
-          name: "Scholarship Applicant",
+          name: user?.displayName || "Scholarship Applicant",
         },
       },
     });
@@ -73,8 +75,15 @@ const CheckoutForm = () => {
       setLoading(false);
     } else {
       if (result.paymentIntent.status === "succeeded") {
+        await axiosPublic.post("/payments", {
+          scholarshipId: scholarship._id,
+          amount: totalAmount,
+          transactionId: result.paymentIntent.id,
+          email: user?.email,
+        });
+
         toast.success("Payment successful!");
-        navigate("/dashboard/my-applications");
+        navigate("/payment-success", { state: { scholarship } });
       }
       setLoading(false);
     }

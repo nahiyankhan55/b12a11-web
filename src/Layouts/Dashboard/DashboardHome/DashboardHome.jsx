@@ -6,8 +6,10 @@ const DashboardHome = () => {
 
   return (
     <div className="w-full flex flex-col">
-      <div className="w-full py-10 md:py-16 text-center bg-linear-to-r from-purple-100 via-white to-purple-100">
-        Welcome {userName || "User"} in ScholarStream
+      <div className="w-full py-10 md:py-16 text-center bg-linear-to-r from-purple-100 via-white to-purple-100 md:text-3xl sm:text-2xl text-lg font-medium">
+        Welcome{" "}
+        <span className="font-semibold italic">{userName || "User"}</span> in
+        ScholarStream
       </div>
     </div>
   );
