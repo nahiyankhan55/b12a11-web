@@ -142,9 +142,8 @@ const ScholarshipDetails = () => {
 
               <Stack
                 direction="row"
-                spacing={2}
                 flexWrap="wrap"
-                className="mb-3"
+                className="mb-3 mt-3 flex items-center gap-3"
               >
                 <Chip label={scholarship.degree || "Degree"} />
                 <Chip label={scholarship.scholarshipCategory || "Category"} />
@@ -185,11 +184,20 @@ const ScholarshipDetails = () => {
 
               <Divider className="my-4" />
 
-              <Stack direction="row" spacing={2} alignItems="flex-end">
+              <Stack
+                direction="row"
+                spacing={2}
+                alignItems="flex-end"
+                className="flex items-center gap-3 flex-wrap"
+              >
                 <Button variant="contained" onClick={handleApply}>
                   Apply for Scholarship
                 </Button>
-                <Box marginLeft="auto" textAlign="right">
+                <Box
+                  marginLeft="auto"
+                  textAlign="right"
+                  className="flex flex-col sm:items-start items-center"
+                >
                   <Typography variant="body2" color="textSecondary">
                     Average Rating
                   </Typography>

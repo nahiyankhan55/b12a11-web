@@ -29,6 +29,7 @@ const PaymentSuccess = () => {
       applicant: user.email,
       appliedDate: new Date(),
       status: "pending",
+      payment: "Paid",
     };
 
     axiosPublic
