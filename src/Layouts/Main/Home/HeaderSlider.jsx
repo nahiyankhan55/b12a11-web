@@ -24,21 +24,21 @@ const HeaderSlider = () => {
     >
       <SwiperSlide>
         <img
-          className="mx-auto w-full lg:h-[450px] sm:h-[350px] h-[200px]"
+          className="mx-auto w-full lg:h-[450px] sm:h-[350px] h-[200px] object-cover"
           src={slide1}
           alt="slide-image"
         />
       </SwiperSlide>
       <SwiperSlide>
         <img
-          className="mx-auto w-full lg:h-[450px] sm:h-[350px] h-[200px]"
+          className="mx-auto w-full lg:h-[450px] sm:h-[350px] h-[200px] object-cover"
           src={slide2}
           alt="slide-image"
         />
       </SwiperSlide>
       <SwiperSlide>
         <img
-          className="mx-auto w-full lg:h-[450px] sm:h-[350px] h-[200px]"
+          className="mx-auto w-full lg:h-[450px] sm:h-[350px] h-[200px] object-cover"
           src={slide3}
           alt="slide-image"
         />
