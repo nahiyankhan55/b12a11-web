@@ -178,7 +178,7 @@ const MyApplications = () => {
                 {app.scholar?.universityImage ? (
                   <CardMedia
                     component="img"
-                    height="160"
+                    className="max-h-40 h-full"
                     image={app.scholar.universityImage}
                     alt={app.scholar.universityName}
                   />
