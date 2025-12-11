@@ -73,6 +73,7 @@ const CheckoutForm = () => {
     if (result.error) {
       toast.error(result.error.message || "Payment failed");
       setLoading(false);
+      navigate("/payment-failed", { state: { scholarship } });
     } else {
       if (result.paymentIntent.status === "succeeded") {
         await axiosPublic.post("/payments", {

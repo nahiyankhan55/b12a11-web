@@ -102,7 +102,7 @@ const ScholarshipDetails = () => {
       <Grid container spacing={4}>
         {/* LEFT CONTENT */}
         <Grid item xs={12} md={8}>
-          <Card className="shadow-sm">
+          <Card className="shadow-sm max-w-2xl">
             <CardMedia
               component="img"
               height="360"
@@ -188,7 +188,7 @@ const ScholarshipDetails = () => {
                 direction="row"
                 spacing={2}
                 alignItems="flex-end"
-                className="flex items-center gap-3 flex-wrap"
+                className="flex items-center gap-3 flex-wrap mt-2"
               >
                 <Button variant="contained" onClick={handleApply}>
                   Apply for Scholarship
