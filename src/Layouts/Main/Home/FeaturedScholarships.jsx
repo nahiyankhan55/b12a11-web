@@ -27,14 +27,13 @@ const FeaturedScholarships = () => {
     );
 
   return (
-    <div className="w-full max-w-6xl mx-auto py-10">
+    <div className="w-full max-w-6xl mx-auto py-10 px-4">
       <h1 className="md:text-3xl text-2xl font-bold text-center">
         Featured Scholarships
       </h1>
-      <p className="text-gray-600 max-w-2xl text-center mx-auto mt-2">
+      <p className="text-gray-600 max-w-2xl text-center mx-auto mt-2 sm:text-base text-sm">
         Featured scholarships from top global universities. Find updated
-        opportunities, categories, funding details, and quick access to apply
-        for your best match.
+        opportunities and quick access to apply for your best match.
       </p>
       {scholarships.length === 0 && (
         <p className="text-center text-gray-500 py-5">
