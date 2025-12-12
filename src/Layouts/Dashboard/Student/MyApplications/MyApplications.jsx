@@ -35,6 +35,12 @@ const MyApplications = () => {
   const [selected, setSelected] = useState(null); // application object for details modal
   const [deletingId, setDeletingId] = useState(null); // id being deleted (for disabling)
 
+  // review states
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [selectedForReview, setSelectedForReview] = useState(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+
   // GET: user's applications (useQuery per requirement)
   const {
     data: applications = [],
@@ -54,14 +60,13 @@ const MyApplications = () => {
     retry: 1,
   });
 
+  // details modal
   const handleView = (app) => {
     setSelected(app);
   };
-
-  console.log(applications);
-
   const handleClose = () => setSelected(null);
 
+  // go edit page
   const handleEdit = (app) => {
     // only editable when status is 'pending'
     if (app.status !== "pending") {
@@ -71,6 +76,7 @@ const MyApplications = () => {
     navigate(`/dashboard/edit-application/${app._id}`, { state: { app } });
   };
 
+  // payment failed
   const handlePay = (app) => {
     // only allow pay when pending + paymentStatus unpaid
     if (app.applicationStatus !== "pending" || app.payment === "Paid") {
@@ -83,6 +89,7 @@ const MyApplications = () => {
     });
   };
 
+  // delete application
   const handleDelete = async (app) => {
     if (app.status !== "pending") {
       toast.info("Only pending applications can be deleted.");
@@ -132,6 +139,50 @@ const MyApplications = () => {
       });
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  // review modal
+  const openReviewModal = (app) => {
+    setSelectedForReview(app);
+    setReviewOpen(true);
+  };
+  const closeReviewModal = () => {
+    setReviewOpen(false);
+    setSelectedForReview(null);
+    setRating(0);
+    setComment("");
+  };
+
+  // post review
+  const handleSubmitReview = async () => {
+    if (!rating || !comment) {
+      toast.error("Please give rating & comment.");
+      return;
+    }
+
+    try {
+      const reviewData = {
+        scholarshipId: selectedForReview.scholarshipId,
+        universityName: selectedForReview.universityName,
+        userName: user.displayName,
+        userEmail: user.email,
+        userImage: user.photoURL,
+        ratingPoint: rating,
+        reviewComment: comment,
+        reviewDate: new Date(),
+      };
+
+      const res = await axiosSecure.post("/reviews", reviewData);
+
+      if (res.status === 200) {
+        toast.success("Review added!");
+        queryClient.invalidateQueries(["applications", user.email]);
+        closeReviewModal();
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit review.");
     }
   };
 
@@ -247,6 +298,7 @@ const MyApplications = () => {
                 <Divider />
 
                 <Stack direction="row" className="p-3 flex flex-wrap gap-1">
+                  {/* Details Button */}
                   <Button
                     size="small"
                     variant="outlined"
@@ -255,32 +307,47 @@ const MyApplications = () => {
                     Details
                   </Button>
 
-                  <Button
-                    size="small"
-                    variant="contained"
-                    onClick={() => handleEdit(app)}
-                  >
-                    Edit
-                  </Button>
+                  {/* If application is completed → show Add Review */}
+                  {app.status === "completed" ? (
+                    <Button
+                      size="small"
+                      color="success"
+                      variant="contained"
+                      onClick={() => openReviewModal(app)}
+                    >
+                      Add Review
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        onClick={() => handleEdit(app)}
+                      >
+                        Edit
+                      </Button>
 
-                  <Button
-                    size="small"
-                    color="primary"
-                    variant="contained"
-                    onClick={() => handlePay(app)}
-                  >
-                    Pay
-                  </Button>
+                      <Button
+                        size="small"
+                        color="primary"
+                        disabled={app.payment === "Paid"}
+                        variant="contained"
+                        onClick={() => handlePay(app)}
+                      >
+                        Pay
+                      </Button>
 
-                  <Button
-                    size="small"
-                    color="error"
-                    variant="contained"
-                    onClick={() => handleDelete(app)}
-                    disabled={deletingId === app._id}
-                  >
-                    Delete
-                  </Button>
+                      <Button
+                        size="small"
+                        color="error"
+                        variant="contained"
+                        onClick={() => handleDelete(app)}
+                        disabled={deletingId === app._id}
+                      >
+                        Delete
+                      </Button>
+                    </>
+                  )}
                 </Stack>
               </Card>
             </Grid>
@@ -352,6 +419,62 @@ const MyApplications = () => {
             variant="contained"
           >
             Edit
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Review dialog */}
+      <Dialog
+        open={reviewOpen}
+        onClose={closeReviewModal}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Add Your Review</DialogTitle>
+        <DialogContent dividers>
+          {selectedForReview && (
+            <>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <img
+                  src={user.photoURL}
+                  alt="user"
+                  className="w-14 h-14 rounded-full object-cover"
+                />
+                <Box>
+                  <Typography>{user.displayName}</Typography>
+                  <Typography variant="body2" color="gray">
+                    {user.email}
+                  </Typography>
+                </Box>
+              </Stack>
+
+              <Divider className="my-4" />
+
+              <Typography className="mb-2">Rating (1–5):</Typography>
+              <input
+                type="number"
+                min="1"
+                max="5"
+                value={rating}
+                onChange={(e) => setRating(e.target.value)}
+                className="border p-2 rounded w-full"
+              />
+
+              <Typography className="mt-4 mb-2">Your Comment:</Typography>
+              <textarea
+                rows="4"
+                className="border p-2 rounded w-full"
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              ></textarea>
+            </>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={closeReviewModal}>Cancel</Button>
+          <Button variant="contained" onClick={handleSubmitReview}>
+            Submit Review
           </Button>
         </DialogActions>
       </Dialog>

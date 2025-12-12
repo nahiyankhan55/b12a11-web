@@ -105,7 +105,7 @@ const ScholarshipDetails = () => {
           <Card className="shadow-sm max-w-2xl">
             <CardMedia
               component="img"
-              height="360"
+              className="w-full sm:h-80 h-60"
               image={
                 scholarship.universityImage || "/placeholder-university.jpg"
               }
