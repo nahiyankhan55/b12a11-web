@@ -201,8 +201,7 @@ const MyApplications = () => {
 
                   <Stack
                     direction="row"
-                    spacing={1}
-                    className="mt-3"
+                    className="mt-3 mb-2 flex items-center gap-2 flex-wrap"
                     flexWrap="wrap"
                   >
                     <Chip
@@ -218,18 +217,18 @@ const MyApplications = () => {
                       size="small"
                     />
                     <Chip
-                      label={`Status: ${app.applicationStatus || "pending"}`}
+                      label={`Status: ${app.status || "pending"}`}
                       size="small"
                       color={
-                        app.applicationStatus === "completed"
+                        app.status === "completed"
                           ? "success"
-                          : app.applicationStatus === "processing"
+                          : app.status === "processing"
                           ? "warning"
                           : "default"
                       }
                     />
                     <Chip
-                      label={`Payment: ${app.paymentStatus || "unpaid"}`}
+                      label={`Payment: ${app.payment || "unpaid"}`}
                       size="small"
                     />
                   </Stack>

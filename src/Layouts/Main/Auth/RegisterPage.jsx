@@ -56,7 +56,7 @@ const RegisterPage = () => {
     handleRegisterEmail(email, password)
       .then((result) => {
         const newUser = result.user;
-        updateProfile(newUser.user, {
+        updateProfile(newUser, {
           displayName: name,
           photoURL: image,
         });
