@@ -59,6 +59,7 @@ const MyApplications = () => {
     enabled: !!user?.email,
     retry: 1,
   });
+  console.log(applications);
 
   // details modal
   const handleView = (app) => {
@@ -156,7 +157,7 @@ const MyApplications = () => {
 
   // post review
   const handleSubmitReview = async () => {
-    if (!rating || !comment) {
+    if (!rating || !comment || !selectedForReview.scholar.postedUserEmail) {
       toast.error("Please give rating & comment.");
       return;
     }
@@ -165,8 +166,10 @@ const MyApplications = () => {
       const reviewData = {
         scholarshipId: selectedForReview.scholarshipId,
         universityName: selectedForReview.universityName,
+        scholarshipName: selectedForReview.scholarshipName,
         userName: user.displayName,
         userEmail: user.email,
+        postByEmail: selectedForReview.scholar.postedUserEmail,
         userImage: user.photoURL,
         ratingPoint: rating,
         reviewComment: comment,
