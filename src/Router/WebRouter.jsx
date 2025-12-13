@@ -28,6 +28,7 @@ import UpdateScholarship from "../Layouts/Dashboard/Admin/UpdateScholarship/Upda
 import IsLoginUser from "./Validation/IsLoginUser";
 import IsAdmin from "./Validation/IsAdmin";
 import IsModerator from "./Validation/IsModerator";
+import IsStudent from "./Validation/IsStudent";
 
 const WebRouter = () => {
   const router = createBrowserRouter([
@@ -165,15 +166,27 @@ const WebRouter = () => {
             // student
             {
               path: "/dashboard/my-applications",
-              element: <MyApplications></MyApplications>,
+              element: (
+                <IsStudent>
+                  <MyApplications></MyApplications>
+                </IsStudent>
+              ),
             },
             {
               path: "/dashboard/my-reviews",
-              element: <MyReviews></MyReviews>,
+              element: (
+                <IsStudent>
+                  <MyReviews></MyReviews>
+                </IsStudent>
+              ),
             },
             {
               path: "/dashboard/edit-application/:id",
-              element: <EditApplication></EditApplication>,
+              element: (
+                <IsStudent>
+                  <EditApplication></EditApplication>
+                </IsStudent>
+              ),
             },
           ],
         },
