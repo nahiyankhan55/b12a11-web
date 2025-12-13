@@ -371,8 +371,8 @@ const ManageAppliedApplications = () => {
 
               <Stack spacing={1}>
                 <div>
-                  <strong>Applicant:</strong> {selected.applicant} (
-                  {selected.userEmail})
+                  <strong>Applicant:</strong> {selected.userName} (
+                  {selected.applicant})
                 </div>
                 <div>
                   <strong>Fees:</strong> {selected.fees ?? "-"} ৳

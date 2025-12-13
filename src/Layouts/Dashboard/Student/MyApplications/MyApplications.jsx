@@ -402,7 +402,8 @@ const MyApplications = () => {
 
               <Typography variant="subtitle2">Applicant:</Typography>
               <Typography>
-                {selected.applicant || selected.userEmail || user.email}
+                {selected.userName} (
+                {selected.applicant || selected.userEmail || user.email})
               </Typography>
 
               <Divider className="my-3" />

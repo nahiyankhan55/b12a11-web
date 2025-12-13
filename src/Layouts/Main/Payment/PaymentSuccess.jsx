@@ -27,6 +27,7 @@ const PaymentSuccess = () => {
       universityName: scholarship.universityName,
       fees: scholarship.applicationFees,
       applicant: user.email,
+      userName: user.displayName,
       appliedDate: new Date(),
       status: "pending",
       payment: "Paid",

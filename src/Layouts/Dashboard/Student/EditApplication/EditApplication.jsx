@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, InputAdornment } from "@mui/material";
 import { useNavigate, useParams, useLocation } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
@@ -30,8 +30,8 @@ const EditApplication = () => {
   const [form, setForm] = useState({
     scholarshipName: "",
     universityName: "",
-    applicantName: "",
-    email: "",
+    userName: "",
+    applicant: "",
     address: "",
   });
 
@@ -41,8 +41,8 @@ const EditApplication = () => {
       setForm({
         scholarshipName: appData.scholarshipName || "",
         universityName: appData.universityName || "",
-        applicantName: appData.applicant || "",
-        email: appData.applicant || "",
+        userName: appData.userName || "",
+        applicant: appData.applicant || "",
         address: appData.address || "",
       });
     }
@@ -101,8 +101,14 @@ const EditApplication = () => {
         <TextField
           fullWidth
           label="Applicant Name"
-          name="applicantName"
-          value={form.applicantName}
+          name="userName"
+          value={form.userName}
+          slotProps={{
+            inputLabel: { shrink: true },
+            input: {
+              endAdornment: <InputAdornment position="end"></InputAdornment>,
+            },
+          }}
           onChange={handleChange}
         />
       </div>
@@ -111,18 +117,16 @@ const EditApplication = () => {
         <TextField
           fullWidth
           label="Email"
-          name="email"
-          value={form.email}
-          onChange={handleChange}
-        />
-      </div>
-
-      <div className="mb-4">
-        <TextField
-          fullWidth
-          label="Address"
-          name="address"
-          value={form.address}
+          name="applicant"
+          value={form.applicant}
+          slotProps={{
+            inputLabel: { shrink: true },
+            input: {
+              startAdornment: (
+                <InputAdornment position="start"></InputAdornment>
+              ),
+            },
+          }}
           onChange={handleChange}
         />
       </div>

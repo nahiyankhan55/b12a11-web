@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import WebContext from "../../../Context/WebContext";
+import LiveStatistics from "../../Main/Home/LiveStatistics";
 
 const DashboardHome = () => {
   const { userName } = useContext(WebContext);
@@ -11,6 +12,7 @@ const DashboardHome = () => {
         <span className="font-semibold italic">{userName || "User"}</span> in
         ScholarStream
       </div>
+      <LiveStatistics></LiveStatistics>
     </div>
   );
 };

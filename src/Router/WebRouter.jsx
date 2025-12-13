@@ -25,6 +25,7 @@ import MyReviews from "../Layouts/Dashboard/Student/MyReviews/MyReviews";
 import EditApplication from "../Layouts/Dashboard/Student/EditApplication/EditApplication";
 import App from "../App";
 import UpdateScholarship from "../Layouts/Dashboard/Admin/UpdateScholarship/UpdateScholarship";
+import IsLoginUser from "./Validation/IsLoginUser";
 
 const WebRouter = () => {
   const router = createBrowserRouter([
@@ -87,7 +88,11 @@ const WebRouter = () => {
         },
         {
           path: "/dashboard",
-          element: <Dashboard></Dashboard>,
+          element: (
+            <IsLoginUser>
+              <Dashboard></Dashboard>
+            </IsLoginUser>
+          ),
           children: [
             {
               path: "/dashboard",
