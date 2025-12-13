@@ -27,6 +27,7 @@ import App from "../App";
 import UpdateScholarship from "../Layouts/Dashboard/Admin/UpdateScholarship/UpdateScholarship";
 import IsLoginUser from "./Validation/IsLoginUser";
 import IsAdmin from "./Validation/IsAdmin";
+import IsModerator from "./Validation/IsModerator";
 
 const WebRouter = () => {
   const router = createBrowserRouter([
@@ -147,11 +148,19 @@ const WebRouter = () => {
             // moderator
             {
               path: "/dashboard/manage-applications",
-              element: <ManageAppliedApplications></ManageAppliedApplications>,
+              element: (
+                <IsModerator>
+                  <ManageAppliedApplications></ManageAppliedApplications>
+                </IsModerator>
+              ),
             },
             {
               path: "/dashboard/all-reviews",
-              element: <AllReviews></AllReviews>,
+              element: (
+                <IsModerator>
+                  <AllReviews></AllReviews>
+                </IsModerator>
+              ),
             },
             // student
             {
