@@ -72,20 +72,36 @@ const WebRouter = () => {
             // payment routes
             {
               path: "/payment",
-              element: <CheckoutPayment></CheckoutPayment>,
+              element: (
+                <IsLoginUser>
+                  <CheckoutPayment></CheckoutPayment>
+                </IsLoginUser>
+              ),
             },
             {
               path: "/payment-success",
-              element: <PaymentSuccess></PaymentSuccess>,
+              element: (
+                <IsLoginUser>
+                  <PaymentSuccess></PaymentSuccess>
+                </IsLoginUser>
+              ),
             },
             {
               path: "/payment-failed",
-              element: <PaymentFailed></PaymentFailed>,
+              element: (
+                <IsLoginUser>
+                  <PaymentFailed></PaymentFailed>
+                </IsLoginUser>
+              ),
             },
             // profile
             {
               path: "/profile",
-              element: <MyProfile></MyProfile>,
+              element: (
+                <IsLoginUser>
+                  <MyProfile></MyProfile>
+                </IsLoginUser>
+              ),
             },
           ],
         },

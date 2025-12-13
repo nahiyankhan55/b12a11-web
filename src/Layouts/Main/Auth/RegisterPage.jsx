@@ -247,6 +247,12 @@ const RegisterPage = () => {
             Login
           </Link>
         </p>
+        <Link
+          className="font-semibold text-orange-700 hover:text-green-600 duration-300"
+          to={"/forgot"}
+        >
+          Forgot Password?
+        </Link>
       </div>
     </div>
   );
