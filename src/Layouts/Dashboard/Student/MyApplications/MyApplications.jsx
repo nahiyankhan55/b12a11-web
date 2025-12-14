@@ -24,6 +24,7 @@ import useAxiosPublic from "../../../../Hook/useAxiosPublic";
 import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import DataLoader from "../../../../Components/DataLoader";
 import Swal from "sweetalert2";
+import { HeadProvider, Title } from "react-head";
 
 const MyApplications = () => {
   const { user } = useContext(WebContext);
@@ -212,6 +213,9 @@ const MyApplications = () => {
 
   return (
     <Container maxWidth="lg" className="py-8">
+      <HeadProvider>
+        <Title>My Applications || ScholarStream</Title>
+      </HeadProvider>
       <Typography className="font-semibold md:text-3xl! sm:text-2xl! text-xl! mb-5!">
         My Applications
       </Typography>

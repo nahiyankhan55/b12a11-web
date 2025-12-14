@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import DataLoader from "../../../../Components/DataLoader";
+import { HeadProvider, Title } from "react-head";
 
 const EditApplication = () => {
   const axiosSecure = useAxiosSecure();
@@ -75,6 +76,9 @@ const EditApplication = () => {
 
   return (
     <div style={{ maxWidth: "650px", margin: "0 auto", padding: "20px" }}>
+      <HeadProvider>
+        <Title>Edit Application || ScholarStream</Title>
+      </HeadProvider>
       <h2 className="text-xl font-bold mb-5">Edit Application</h2>
 
       <div className="mb-4">

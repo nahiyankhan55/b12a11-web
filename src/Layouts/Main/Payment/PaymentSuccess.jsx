@@ -3,6 +3,7 @@ import { useContext, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import WebContext from "../../../Context/WebContext";
 import useAxiosPublic from "../../../Hook/useAxiosPublic";
+import { HeadProvider, Title } from "react-head";
 
 const PaymentSuccess = () => {
   const location = useLocation();
@@ -45,6 +46,9 @@ const PaymentSuccess = () => {
 
   return (
     <div className="text-center py-20">
+      <HeadProvider>
+        <Title>Payment Successful || ScholarStream</Title>
+      </HeadProvider>
       <h1 className="text-2xl font-bold text-green-600">
         Payment Successful 🎉
       </h1>

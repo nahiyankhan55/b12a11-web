@@ -9,6 +9,7 @@ import Select from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import DataLoader from "../../../Components/DataLoader";
+import { HeadProvider, Title } from "react-head";
 
 const AllScholarships = () => {
   const axiosPublic = useAxiosPublic();
@@ -43,6 +44,9 @@ const AllScholarships = () => {
 
   return (
     <div className="px-4 md:px-8 lg:px-12 py-10 max-w-7xl mx-auto">
+      <HeadProvider>
+        <Title>All Scholarships || ScholarStream</Title>
+      </HeadProvider>
       <h1 className="lg:text-4xl md:text-3xl text-2xl text-center font-bold mb-6">
         All Scholarships
       </h1>

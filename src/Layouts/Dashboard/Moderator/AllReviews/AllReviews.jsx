@@ -23,6 +23,7 @@ import Swal from "sweetalert2";
 import WebContext from "../../../../Context/WebContext";
 import useAxiosPublic from "../../../../Hook/useAxiosPublic";
 import DataLoader from "../../../../Components/DataLoader";
+import { HeadProvider, Title } from "react-head";
 
 const columnHelper = createColumnHelper();
 
@@ -205,6 +206,9 @@ const AllReviews = () => {
 
   return (
     <Container maxWidth="lg" className="py-8">
+      <HeadProvider>
+        <Title>Manage Reviews || ScholarStream</Title>
+      </HeadProvider>
       <Typography variant="h5" className="mb-4 font-semibold">
         All Reviews (Moderator)
       </Typography>

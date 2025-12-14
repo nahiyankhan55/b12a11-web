@@ -14,6 +14,7 @@ import {
 import DataLoader from "../../../../Components/DataLoader";
 import useAxiosPublic from "../../../../Hook/useAxiosPublic";
 import { useQuery } from "@tanstack/react-query";
+import { HeadProvider, Title } from "react-head";
 
 const Analytics = () => {
   const AxiosPublic = useAxiosPublic();
@@ -53,6 +54,9 @@ const Analytics = () => {
 
   return (
     <Container className="py-8">
+      <HeadProvider>
+        <Title>Admin Analytics || ScholarStream</Title>
+      </HeadProvider>
       <Typography variant="h5" className="mb-4 font-semibold">
         Admin Analytics
       </Typography>

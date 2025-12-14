@@ -19,6 +19,7 @@ import useAxiosPublic from "../../../../Hook/useAxiosPublic";
 import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import ReviewAddEdit from "../ReviewAddEdit/ReviewAddEdit";
 import DataLoader from "../../../../Components/DataLoader";
+import { HeadProvider, Title } from "react-head";
 
 const MyReviews = () => {
   const { user } = useContext(WebContext);
@@ -65,6 +66,9 @@ const MyReviews = () => {
 
   return (
     <Container maxWidth="lg" className="py-8">
+      <HeadProvider>
+        <Title>My Reviews || ScholarStream</Title>
+      </HeadProvider>
       <Typography className="font-semibold md:text-3xl! text-xl! mb-5!">
         My Reviews
       </Typography>

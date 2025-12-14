@@ -12,6 +12,7 @@ import {
 import WebContext from "../../../../Context/WebContext";
 import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import useAxiosPublic from "../../../../Hook/useAxiosPublic";
+import { HeadProvider, Title } from "react-head";
 
 const image_API = `https://api.imgbb.com/1/upload?key=${
   import.meta.env.VITE_IMG_HOSTING_API
@@ -136,6 +137,9 @@ const AddScholarship = () => {
 
   return (
     <div className="max-w-4xl mx-auto md:p-6 p-1 bg-white rounded-md shadow-lg w-full">
+      <HeadProvider>
+        <Title>Add Scholarship || ScholarStream</Title>
+      </HeadProvider>
       <h2 className="sm:text-2xl text-xl md:text-3xl font-semibold mb-2">
         Add Scholarship
       </h2>

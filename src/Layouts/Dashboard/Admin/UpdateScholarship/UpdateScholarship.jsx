@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router";
 import useAxiosPublic from "../../../../Hook/useAxiosPublic";
 import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import DataLoader from "../../../../Components/DataLoader";
+import { HeadProvider, Title } from "react-head";
 
 const UpdateScholarship = () => {
   const { id } = useParams();
@@ -75,6 +76,9 @@ const UpdateScholarship = () => {
 
   return (
     <div className="max-w-4xl mx-auto md:p-6 p-1 shadow-lg rounded-md">
+      <HeadProvider>
+        <Title>Update Scholarship || ScholarStream</Title>
+      </HeadProvider>
       <h2 className="sm:text-2xl md:text-3xl text-xl font-semibold mb-4">
         Update Scholarship
       </h2>

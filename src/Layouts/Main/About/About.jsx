@@ -1,7 +1,13 @@
+import { HeadProvider, Title } from "react-head";
+
 const About = () => {
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-3xl font-bold mb-4">About Us</h1>
+    <div className="p-10 max-w-3xl mx-auto">
+      <HeadProvider>
+        <Title>About Us || ScholarStream</Title>
+      </HeadProvider>
+
+      <h1 className="md:text-3xl text-2xl font-bold mb-4">About Us</h1>
 
       <p className="mb-3">
         Welcome to our platform. We aim to provide a modern, fast, and

@@ -26,6 +26,7 @@ import {
 import DataLoader from "../../../../Components/DataLoader";
 import WebContext from "../../../../Context/WebContext";
 import useAxiosPublic from "../../../../Hook/useAxiosPublic";
+import { HeadProvider, Title } from "react-head";
 
 const columnHelper = createColumnHelper();
 
@@ -298,6 +299,9 @@ const ManageAppliedApplications = () => {
 
   return (
     <Container maxWidth="lg" className="py-8">
+      <HeadProvider>
+        <Title>Manage Applications || ScholarStream</Title>
+      </HeadProvider>
       <Typography variant="h5" className="mb-4 font-semibold">
         Manage Applied Applications
       </Typography>

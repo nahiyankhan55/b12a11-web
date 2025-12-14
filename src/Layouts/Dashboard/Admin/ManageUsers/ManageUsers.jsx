@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import WebContext from "../../../../Context/WebContext";
+import { HeadProvider, Title } from "react-head";
 
 const ManageUsers = () => {
   const axiosSecure = useAxiosSecure();
@@ -162,6 +163,9 @@ const ManageUsers = () => {
 
   return (
     <div className="md:p-6 p-2 max-w-6xl mx-auto">
+      <HeadProvider>
+        <Title>Manage Users || ScholarStream</Title>
+      </HeadProvider>
       <h2 className="text-xl font-semibold mb-4">Manage Users</h2>
 
       <div className="mb-4">

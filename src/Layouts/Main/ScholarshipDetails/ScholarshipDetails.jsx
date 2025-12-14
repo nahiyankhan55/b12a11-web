@@ -18,6 +18,7 @@ import {
 import { toast } from "react-toastify";
 import useAxiosPublic from "../../../Hook/useAxiosPublic";
 import DataLoader from "../../../Components/DataLoader";
+import { HeadProvider, Title } from "react-head";
 
 const ScholarshipDetails = () => {
   const { id } = useParams();
@@ -74,15 +75,25 @@ const ScholarshipDetails = () => {
   if (scholarshipError) {
     toast.error("Failed to load scholarship details");
     return (
-      <p className="py-8 text-center text-red-600">
-        Failed to load scholarship.
-      </p>
+      <div>
+        <HeadProvider>
+          <Title>Scholarship Details || ScholarStream</Title>
+        </HeadProvider>
+        <p className="py-8 text-center text-red-600">
+          Failed to load scholarship.
+        </p>
+      </div>
     );
   }
 
   if (!scholarship) {
     return (
-      <p className="py-8 text-center text-gray-600">Scholarship not found.</p>
+      <div>
+        <HeadProvider>
+          <Title>Scholarship Details || ScholarStream</Title>
+        </HeadProvider>
+        <p className="py-8 text-center text-gray-600">Scholarship not found.</p>
+      </div>
     );
   }
 
@@ -99,6 +110,9 @@ const ScholarshipDetails = () => {
 
   return (
     <Container maxWidth="lg" className="py-8">
+      <HeadProvider>
+        <Title>Scholarship Details || ScholarStream</Title>
+      </HeadProvider>
       <Grid container spacing={4}>
         {/* LEFT CONTENT */}
         <Grid item xs={12} md={8}>

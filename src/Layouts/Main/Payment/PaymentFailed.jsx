@@ -1,3 +1,4 @@
+import { HeadProvider, Title } from "react-head";
 import { useNavigate } from "react-router";
 
 const PaymentFailed = () => {
@@ -5,6 +6,9 @@ const PaymentFailed = () => {
 
   return (
     <div className="text-center py-20">
+      <HeadProvider>
+        <Title>Payment Failed || ScholarStream</Title>
+      </HeadProvider>
       <h1 className="text-2xl font-bold text-red-600">Payment Failed ❌</h1>
 
       <p className="mt-2">Your payment was not completed. Status: Unpaid</p>

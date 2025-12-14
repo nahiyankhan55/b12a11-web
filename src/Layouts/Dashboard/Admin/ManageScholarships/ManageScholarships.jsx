@@ -14,6 +14,7 @@ import { Button } from "@mui/material";
 import { useContext } from "react";
 import WebContext from "../../../../Context/WebContext";
 import { Link } from "react-router";
+import { HeadProvider, Title } from "react-head";
 
 const columnHelper = createColumnHelper();
 
@@ -146,6 +147,9 @@ const ManageScholarships = () => {
 
   return (
     <div className="sm:p-4 p-1 space-y-4">
+      <HeadProvider>
+        <Title>Manage Scholarships || ScholarStream</Title>
+      </HeadProvider>
       <h2 className="sm:text-2xl md:text-3xl text-xl font-semibold">
         Manage Scholarships
       </h2>
