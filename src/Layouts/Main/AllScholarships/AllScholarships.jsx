@@ -18,14 +18,11 @@ const AllScholarships = () => {
   const [category, setCategory] = useState("");
   const [sortBy, setSortBy] = useState("");
   const [order, setOrder] = useState("");
+  const [page, setPage] = useState(1);
+  const limit = 9; // 9 cards per page
 
-  const {
-    data: scholarships = [],
-    isLoading,
-    isError,
-    refetch,
-  } = useQuery({
-    queryKey: ["scholarships", search, category, sortBy, order],
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["scholarships", search, category, sortBy, order, page],
     queryFn: async () => {
       const res = await axiosPublic.get("/scholarships", {
         params: {
@@ -33,11 +30,17 @@ const AllScholarships = () => {
           category,
           sortBy,
           order,
+          page,
+          limit,
         },
       });
       return res.data;
     },
+    keepPreviousData: true,
   });
+
+  const scholarships = data?.data || [];
+  const totalPages = data?.totalPages || 1;
 
   if (isError)
     return (
@@ -65,7 +68,7 @@ const AllScholarships = () => {
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
-            refetch();
+            setPage(1);
           }}
           className="md:w-1/2"
         />
@@ -79,13 +82,12 @@ const AllScholarships = () => {
             label="Category"
             onChange={(e) => {
               setCategory(e.target.value);
-              refetch();
             }}
           >
             <MenuItem value="">All Categories</MenuItem>
-            <MenuItem value="Full Fund">Full Fund</MenuItem>
+            <MenuItem value="Full fund">Full Fund</MenuItem>
             <MenuItem value="Partial">Partial</MenuItem>
-            <MenuItem value="Self-Fund">Self Fund</MenuItem>
+            <MenuItem value="Self-fund">Self Fund</MenuItem>
           </Select>
         </FormControl>
 
@@ -112,6 +114,10 @@ const AllScholarships = () => {
       {/* Scholarships Grid */}
       {isLoading ? (
         <DataLoader></DataLoader>
+      ) : scholarships.length === 0 ? (
+        <p className="text-center text-gray-500 py-10">
+          No scholarships found.
+        </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {scholarships.map((item) => (
@@ -162,11 +168,28 @@ const AllScholarships = () => {
         </div>
       )}
 
-      {scholarships.length === 0 && (
-        <p className="text-center text-gray-500 py-10">
-          No scholarships found.
-        </p>
-      )}
+      {/* Pagination */}
+      <div className="flex justify-center items-center gap-4 mt-10">
+        <button
+          disabled={page === 1}
+          onClick={() => setPage((p) => p - 1)}
+          className="px-4 py-2 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+
+        <span className="font-semibold">
+          Page {page} of {totalPages}
+        </span>
+
+        <button
+          disabled={page === totalPages}
+          onClick={() => setPage((p) => p + 1)}
+          className="px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };

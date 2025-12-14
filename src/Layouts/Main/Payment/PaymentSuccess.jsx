@@ -45,7 +45,7 @@ const PaymentSuccess = () => {
   }, [scholarship, user]);
 
   return (
-    <div className="text-center py-20">
+    <div className="text-center py-20 flex flex-col items-center gap-3">
       <HeadProvider>
         <Title>Payment Successful || ScholarStream</Title>
       </HeadProvider>
@@ -59,6 +59,12 @@ const PaymentSuccess = () => {
         className="btn mt-4 text-white bg-blue-600 py-2 px-4 rounded-md hover:bg-sky-800 duration-300"
       >
         Go to My Applications
+      </button>
+      <button
+        onClick={() => navigate("/all-scholarships")}
+        className="btn mt-4 text-white bg-green-600 py-2 px-4 rounded-md hover:bg-teal-800 duration-300"
+      >
+        Back to Scholarships
       </button>
     </div>
   );
