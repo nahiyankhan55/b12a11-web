@@ -16,6 +16,8 @@ const AllScholarships = () => {
 
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [order, setOrder] = useState("");
 
   const {
     data: scholarships = [],
@@ -23,12 +25,14 @@ const AllScholarships = () => {
     isError,
     refetch,
   } = useQuery({
-    queryKey: ["scholarships", search, category],
+    queryKey: ["scholarships", search, category, sortBy, order],
     queryFn: async () => {
       const res = await axiosPublic.get("/scholarships", {
         params: {
           search,
           category,
+          sortBy,
+          order,
         },
       });
       return res.data;
@@ -81,7 +85,26 @@ const AllScholarships = () => {
             <MenuItem value="">All Categories</MenuItem>
             <MenuItem value="Full Fund">Full Fund</MenuItem>
             <MenuItem value="Partial">Partial</MenuItem>
-            <MenuItem value="Self Fund">Self Fund</MenuItem>
+            <MenuItem value="Self-Fund">Self Fund</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl fullWidth className="md:w-1/4">
+          <InputLabel>Sort By</InputLabel>
+          <Select
+            label="Sort By"
+            value={`${sortBy}-${order}`}
+            onChange={(e) => {
+              const [sb, ord] = e.target.value.split("-");
+              setSortBy(sb);
+              setOrder(ord);
+            }}
+          >
+            <MenuItem value="">Default</MenuItem>
+            <MenuItem value="fees-asc">Application Fees (Low → High)</MenuItem>
+            <MenuItem value="fees-desc">Application Fees (High → Low)</MenuItem>
+            <MenuItem value="date-desc">Newest First</MenuItem>
+            <MenuItem value="date-asc">Oldest First</MenuItem>
           </Select>
         </FormControl>
       </div>
