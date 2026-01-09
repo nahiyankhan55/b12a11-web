@@ -1,31 +1,28 @@
 import { useState, useMemo, useContext } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import {
   useReactTable,
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Select,
-  MenuItem,
-  Button,
-} from "@mui/material";
 import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import WebContext from "../../../../Context/WebContext";
 import { HeadProvider, Title } from "react-head";
+import DataLoader from "../../../../Components/DataLoader";
+import {
+  MdDelete,
+  MdCheckCircle,
+  MdPersonAddAlt1,
+  MdFilterList,
+} from "react-icons/md";
+import Swal from "sweetalert2";
 
 const ManageUsers = () => {
   const axiosSecure = useAxiosSecure();
   const [roleFilter, setRoleFilter] = useState("");
-  const { user } = useContext(WebContext);
+  const { user, theme } = useContext(WebContext);
 
-  // Fetch all users
   const {
     data: users = [],
     isLoading,
@@ -45,8 +42,8 @@ const ManageUsers = () => {
         role: newRole,
       });
       if (res.status === 200) {
-        toast.success("Role updated successfully");
-        refetch(); // safer than invalidateQueries
+        toast.success(`Role updated to ${newRole}`);
+        refetch();
       }
     } catch (err) {
       toast.error("Failed to update role");
@@ -54,103 +51,129 @@ const ManageUsers = () => {
   };
 
   const handleDelete = async (userId) => {
-    if (!confirm("Are you sure you want to delete this user?")) return;
-    try {
-      const res = await axiosSecure.delete(`/users/${userId}`);
-      if (res.status === 200) {
-        toast.success("User deleted successfully");
-        refetch();
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This user will be permanently removed!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#ef4444",
+      cancelButtonColor: "#64748b",
+      confirmButtonText: "Yes, Delete",
+      background: theme === "dark" ? "#0f172a" : "#fff",
+      color: theme === "dark" ? "#fff" : "#000",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axiosSecure.delete(`/users/${userId}`);
+          toast.success("User deleted");
+          refetch();
+        } catch (err) {
+          toast.error("Delete failed");
+        }
       }
-    } catch (err) {
-      toast.error("Failed to delete user");
-    }
+    });
   };
 
-  // assign moderator
   const handleAssign = async (userEmail) => {
     try {
       const res = await axiosSecure.put(`/users/assign/${userEmail}`, {
-        moderatorFor: user.email, // এখানে যেটা save হবে
+        moderatorFor: user.email,
       });
-
       if (res.status === 200) {
         toast.success("Moderator assigned successfully");
         refetch();
       }
     } catch (err) {
-      toast.error("Failed to assign moderator");
+      toast.error("Assignment failed");
     }
   };
 
-  // Memoized filtered data
   const tableData = useMemo(() => {
-    return roleFilter
-      ? users.filter((user) => user.role === roleFilter)
-      : users;
+    return roleFilter ? users.filter((u) => u.role === roleFilter) : users;
   }, [users, roleFilter]);
 
   const columns = useMemo(
     () => [
-      { accessorKey: "name", header: "Name" },
-      { accessorKey: "email", header: "Email" },
+      {
+        accessorKey: "name",
+        header: "User Details",
+        cell: ({ row }) => (
+          <div className="flex flex-col">
+            <span className="font-bold text-sm">{row.original.name}</span>
+            <span className="text-xs opacity-50">{row.original.email}</span>
+          </div>
+        ),
+      },
       {
         accessorKey: "role",
-        header: "Role",
+        header: "Role Management",
         cell: ({ row }) => (
-          <Select
+          <select
             value={row.original.role}
-            readOnly={row.original.role === "Admin"}
+            disabled={row.original.role === "Admin"}
             onChange={(e) => handleRoleChange(row.original._id, e.target.value)}
-            size="small"
+            className={`text-xs font-bold px-3 py-2 rounded-xl outline-none border transition-all ${
+              theme === "dark"
+                ? "bg-slate-800 border-slate-700 text-slate-300"
+                : "bg-gray-50 border-gray-200 text-slate-700"
+            } ${
+              row.original.role === "Admin"
+                ? "opacity-50 cursor-not-allowed"
+                : "cursor-pointer focus:border-sky-500"
+            }`}
           >
-            <MenuItem value="Student">Student</MenuItem>
-            <MenuItem value="Moderator">Moderator</MenuItem>
-            <MenuItem value="Admin">Admin</MenuItem>
-          </Select>
+            <option value="Student">Student</option>
+            <option value="Moderator">Moderator</option>
+            <option value="Admin">Admin</option>
+          </select>
         ),
       },
       {
         id: "actions",
         header: "Actions",
         cell: ({ row }) => (
-          <div className="flex gap-2">
-            <Button
-              color={row.original.role === "Admin" ? "inherit" : "error"}
-              size="small"
-              variant="contained"
+          <div className="flex items-center gap-2">
+            {/* Delete Button */}
+            <button
               disabled={row.original.role === "Admin"}
               onClick={() => handleDelete(row.original._id)}
+              className={`p-2 rounded-xl transition-all ${
+                row.original.role === "Admin"
+                  ? "opacity-20 cursor-not-allowed"
+                  : "bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white"
+              }`}
+              title="Delete User"
             >
-              Delete
-            </Button>
+              <MdDelete size={18} />
+            </button>
 
-            {/* Only for Moderator role */}
+            {/* Assign Button (Only for Moderators) */}
             {row.original.role === "Moderator" && (
-              <Button
-                color={
-                  row.original?.moderatorFor ||
-                  user?.email === row.original?.moderatorFor
-                    ? "inherit"
-                    : "primary"
-                }
-                size="small"
-                variant="contained"
-                disabled={
-                  user?.email === row.original?.moderatorFor ||
-                  row.original?.moderatorFor
-                }
+              <button
+                disabled={row.original?.moderatorFor}
                 onClick={() => handleAssign(row.original.email)}
+                className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-black transition-all ${
+                  row.original?.moderatorFor
+                    ? "bg-emerald-500/10 text-emerald-500 opacity-60"
+                    : "bg-sky-500 text-white hover:bg-sky-600 shadow-lg shadow-sky-500/20"
+                }`}
               >
-                {user?.email === row.original?.moderatorFor
-                  ? "Assigned"
-                  : "Assign"}
-              </Button>
+                {row.original?.moderatorFor ? (
+                  <>
+                    <MdCheckCircle className="text-lg" /> Assigned
+                  </>
+                ) : (
+                  <>
+                    <MdPersonAddAlt1 className="text-lg" /> Assign
+                  </>
+                )}
+              </button>
             )}
           </div>
         ),
       },
     ],
-    []
+    [theme, user?.email]
   );
 
   const table = useReactTable({
@@ -159,55 +182,115 @@ const ManageUsers = () => {
     getCoreRowModel: getCoreRowModel(),
   });
 
-  if (isLoading) return <p className="text-center py-5">Loading...</p>;
+  if (isLoading) return <DataLoader />;
 
   return (
-    <div className="md:p-6 p-2 max-w-6xl mx-auto">
+    <div className="w-full p-2 sm:p-4 md:p-8">
       <HeadProvider>
         <Title>Manage Users || ScholarStream</Title>
       </HeadProvider>
-      <h2 className="text-xl font-semibold mb-4">Manage Users</h2>
 
-      <div className="mb-4">
-        <Select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-          displayEmpty
-        >
-          <MenuItem value="">All Roles</MenuItem>
-          <MenuItem value="Student">Student</MenuItem>
-          <MenuItem value="Moderator">Moderator</MenuItem>
-          <MenuItem value="Admin">Admin</MenuItem>
-        </Select>
+      {/* Header Section */}
+      <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div>
+          <h2
+            className={`md:text-3xl text-2xl font-black tracking-tight ${
+              theme === "dark" ? "text-white" : "text-slate-900"
+            }`}
+          >
+            Manage Platform Users
+          </h2>
+          <p className="opacity-60 font-medium text-sm lg:text-base">
+            Control user roles, permissions and account status.
+          </p>
+        </div>
+
+        {/* Filter Section */}
+        <div className="flex items-center gap-3">
+          <div
+            className={`p-3 rounded-2xl border flex items-center gap-2 ${
+              theme === "dark"
+                ? "bg-slate-900 border-slate-800"
+                : "bg-white border-gray-100 shadow-sm"
+            }`}
+          >
+            <MdFilterList className="text-sky-500" />
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              className="bg-transparent text-xs font-black uppercase tracking-widest outline-none cursor-pointer"
+            >
+              <option value="">All Roles</option>
+              <option value="Student">Students</option>
+              <option value="Moderator">Moderators</option>
+              <option value="Admin">Admins</option>
+            </select>
+          </div>
+        </div>
       </div>
 
-      <Table>
-        <TableHead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableCell key={header.id}>
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </TableCell>
+      {/* Table Container */}
+      <div
+        className={`overflow-hidden rounded-4xl border transition-all duration-300 ${
+          theme === "dark"
+            ? "bg-slate-900 border-slate-800"
+            : "bg-white border-gray-100 shadow-xl shadow-gray-200/50"
+        }`}
+      >
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead
+              className={`text-[10px] uppercase tracking-[0.2em] font-black ${
+                theme === "dark"
+                  ? "bg-slate-800/50 text-slate-500"
+                  : "bg-gray-50 text-slate-400"
+              }`}
+            >
+              {table.getHeaderGroups().map((hg) => (
+                <tr key={hg.id}>
+                  {hg.headers.map((header) => (
+                    <th key={header.id} className="p-6">
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </th>
+                  ))}
+                </tr>
               ))}
-            </TableRow>
-          ))}
-        </TableHead>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
+            </thead>
+
+            <tbody className="divide-y divide-slate-500/10">
+              {table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  className={`transition-colors ${
+                    theme === "dark"
+                      ? "hover:bg-slate-800/30"
+                      : "hover:bg-gray-50/50"
+                  }`}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="p-6">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+            </tbody>
+          </table>
+        </div>
+
+        {/* Empty State */}
+        {tableData.length === 0 && (
+          <div className="p-20 text-center opacity-40 font-bold tracking-widest uppercase text-xs">
+            No users found in this category
+          </div>
+        )}
+      </div>
     </div>
   );
 };
