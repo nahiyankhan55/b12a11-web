@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import WebContext from "../../../Context/WebContext";
 import { Link } from "react-router";
+import { HeadProvider, Title } from "react-head";
 
 const Stories = () => {
   const { theme } = useContext(WebContext);
@@ -54,6 +55,9 @@ const Stories = () => {
           : "bg-gray-50 text-gray-700"
       }`}
     >
+      <HeadProvider>
+        <Title>Success Stories || ScholarStream</Title>
+      </HeadProvider>
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
         {/* Header Section - 3xl Rule */}
         <div className="mb-16 text-center border-b border-gray-200 dark:border-gray-800 pb-10">
