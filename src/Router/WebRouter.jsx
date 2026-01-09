@@ -29,6 +29,10 @@ import IsLoginUser from "./Validation/IsLoginUser";
 import IsAdmin from "./Validation/IsAdmin";
 import IsModerator from "./Validation/IsModerator";
 import IsStudent from "./Validation/IsStudent";
+import Terms from "../Layouts/Main/Terms/Terms";
+import Policy from "../Layouts/Main/Policy/Policy";
+import Stories from "../Layouts/Main/Stories/Stories";
+import Career from "../Layouts/Main/Career/Career";
 
 const WebRouter = () => {
   const router = createBrowserRouter([
@@ -52,6 +56,22 @@ const WebRouter = () => {
             {
               path: "/about",
               element: <About></About>,
+            },
+            {
+              path: "/terms",
+              element: <Terms></Terms>,
+            },
+            {
+              path: "/policy",
+              element: <Policy></Policy>,
+            },
+            {
+              path: "/stories",
+              element: <Stories></Stories>,
+            },
+            {
+              path: "/career",
+              element: <Career></Career>,
             },
             {
               path: "/scholarship-details/:id",
