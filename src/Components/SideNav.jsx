@@ -22,7 +22,6 @@ const SideNav = ({ role }) => {
       icon: <MdAssignment />,
       role: "student",
     },
-
     {
       to: "/dashboard/my-reviews",
       label: "My Reviews",
@@ -66,37 +65,45 @@ const SideNav = ({ role }) => {
   };
 
   return (
-    <div className="w-full h-full bg-orange-200 sm:p-4 p-1 space-y-2">
-      {renderLinks().map((item) => {
-        if (item.role && item.role !== fixedRole) return null;
+    <div className="w-full h-full sm:p-4 p-2 space-y-2 flex flex-col border-r-2">
+      {/* Sidebar Links */}
+      <div className="flex-1 space-y-1">
+        {renderLinks().map((item) => {
+          if (item.role && item.role !== fixedRole) return null;
 
-        return (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `flex items-center gap-2 px-3 py-2 rounded-md font-medium ${
-                isActive
-                  ? "bg-orange-400 text-white"
-                  : "text-black hover:bg-orange-300"
-              }`
-            }
-          >
-            <span className="text-xl">{item.icon}</span>
+          return (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-300 ${
+                  isActive
+                    ? "bg-sky-500 text-white shadow-lg shadow-sky-500/30"
+                    : "text-slate-500 hover:bg-sky-500/10 hover:text-sky-500"
+                }`
+              }
+            >
+              <span className="text-2xl">{item.icon}</span>
 
-            {/* desktop text */}
-            <span className="lg:flex hidden lg:text-sm xl:text-base">
-              {item.label}
-            </span>
-          </NavLink>
-        );
-      })}
+              {/* desktop text */}
+              <span className="lg:flex hidden lg:text-sm xl:text-base tracking-tight">
+                {item.label}
+              </span>
+            </NavLink>
+          );
+        })}
+      </div>
+
+      {/* Divider */}
+      <div className="h-px w-full bg-slate-200/50 my-4"></div>
+
+      {/* Back Home Link */}
       <Link
         to={"/"}
-        className="flex items-center gap-2 px-3 py-2 rounded-md font-medium text-black hover:bg-orange-300"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-slate-500 hover:bg-indigo-500/10 hover:text-indigo-500 transition-all duration-300"
       >
-        <FaHome className="text-xl" />
-        <span className="lg:flex hidden lg:text-sm xl:text-base">
+        <FaHome className="text-2xl" />
+        <span className="lg:flex hidden lg:text-sm xl:text-base tracking-tight">
           Back Home
         </span>
       </Link>
