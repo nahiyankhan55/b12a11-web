@@ -92,7 +92,7 @@ const AddScholarship = () => {
   }`;
 
   return (
-    <div className="max-w-5xl mx-auto animate-in fade-in duration-700">
+    <div className="max-w-5xl mx-auto duration-700">
       <HeadProvider>
         <Title>Add Scholarship || ScholarStream</Title>
       </HeadProvider>
