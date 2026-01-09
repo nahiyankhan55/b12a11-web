@@ -10,7 +10,7 @@ function App() {
   }, []);
 
   return (
-    <div className="max-w-[1440px] mx-auto w-full h-full flex flex-col items-center">
+    <div className="max-w-[1440px] mx-auto w-full h-full flex flex-col items-center overflow-hidden">
       <Outlet></Outlet>
     </div>
   );
