@@ -61,17 +61,22 @@ const ScholarshipDetails = () => {
   // fetch similar scholarships
   const { data: recommendations = [], isLoading: loadingRecs } = useQuery({
     queryKey: scholarship
-      ? ["recs", scholarship.subjectCategory || scholarship.scholarshipCategory]
+      ? ["recs", scholarship.scholarshipCategory]
       : ["recs", "empty"],
     queryFn: async () => {
       if (!scholarship) return [];
-      const cat =
-        scholarship.subjectCategory || scholarship.scholarshipCategory || "";
-      const res = await axiosPublic.get("/scholarships", {
-        params: { category: cat },
+
+      const cat = scholarship.scholarshipCategory || "";
+
+      const res = await axiosPublic.get("/rec/scholarships", {
+        params: {
+          category: cat,
+          currentId: id,
+        },
       });
-      return (res.data || []).filter((s) => s._id !== id).slice(0, 4);
+      return res.data;
     },
+    enabled: !!scholarship,
     retry: 1,
   });
 
@@ -104,9 +109,7 @@ const ScholarshipDetails = () => {
       }`}
     >
       <HeadProvider>
-        <Title>
-          {scholarship?.scholarshipName || "Details"} || ScholarStream
-        </Title>
+        <Title>Scholarship Details || ScholarStream</Title>
       </HeadProvider>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-8">
