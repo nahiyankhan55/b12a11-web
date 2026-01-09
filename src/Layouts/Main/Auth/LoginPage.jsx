@@ -4,20 +4,35 @@ import WebContext from "../../../Context/WebContext";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Divider, TextField, InputAdornment } from "@mui/material";
-import { MdVisibility, MdVisibilityOff } from "react-icons/md";
+import {
+  MdVisibility,
+  MdVisibilityOff,
+  MdOutlineMailOutline,
+  MdLockOutline,
+  MdAdminPanelSettings,
+  MdSecurity,
+  MdSchool,
+} from "react-icons/md";
 import { FcGoogle } from "react-icons/fc";
 import { Link, useNavigate } from "react-router";
 import { HeadProvider, Title } from "react-head";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const AxiosPublic = useAxiosPublic();
   const navigate = useNavigate();
+  const {
+    theme,
+    handleLoginEmail,
+    handleGoogle,
+    setUser,
+    setUserName,
+    setUserImage,
+  } = useContext(WebContext);
 
-  const { handleLoginEmail, handleGoogle, setUser, setUserName, setUserImage } =
-    useContext(WebContext);
-
-  // all users to check valid email
   const { data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
@@ -26,165 +41,224 @@ const LoginPage = () => {
     },
   });
 
-  // main login
+  const fillCredentials = (roleEmail) => {
+    setEmail(roleEmail);
+    setPassword("ABC@123abc");
+    toast.info(`Credentials filled for ${roleEmail.split("@")[0]}`, {
+      autoClose: 1000,
+    });
+  };
+
   const handleLoginSubmit = (e) => {
     e.preventDefault();
-    const target = e.target;
-
-    const email = target.email.value;
-    const password = target.password.value;
-
     handleLoginEmail(email, password)
       .then((result) => {
         const loggedUser = result.user;
-
         setUser(loggedUser);
         setUserName(loggedUser.displayName);
         setUserImage(loggedUser.photoURL);
         navigate("/");
-        toast.success("Login Successful", {
-          position: "top-right",
-          autoClose: 2000,
-        });
+        toast.success("Login Successful");
       })
-      .catch((error) => {
-        toast.error(`Login Error: ${error.message}`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
-      });
+      .catch((error) => toast.error(`Login Error: ${error.message}`));
   };
 
-  // google function (same as register)
   const handleGoogleMethod = () => {
-    handleGoogle()
-      .then((result) => {
-        const user = result.user;
+    handleGoogle().then((result) => {
+      const user = result.user;
+      setUser(user);
+      setUserName(user.displayName);
+      setUserImage(user.photoURL);
 
-        setUser(user);
-        setUserName(user.displayName);
-        setUserImage(user.photoURL);
+      const exists = users.find((u) => u.email === user.email);
+      if (!exists) {
+        const newUser = {
+          name: user.displayName,
+          email: user.email,
+          image: user.photoURL,
+          role: "Student",
+        };
+        AxiosPublic.post("/users", newUser);
+      }
+      toast.success("Google Login Successful");
+      navigate("/");
+    });
+  };
 
-        toast.success("Google Login Successful", {
-          position: "top-right",
-          autoClose: 2000,
-        });
-
-        const exists = users.find((u) => u.email === user.email);
-
-        if (!exists) {
-          const newUser = {
-            name: user.displayName,
-            email: user.email,
-            image: user.photoURL,
-            role: "Student",
-          };
-
-          AxiosPublic.post("/users", newUser)
-            .then((res) => console.log("new user added", res.data))
-            .catch((err) => console.log(err));
-        }
-        navigate("/");
-      })
-      .catch((error) => {
-        toast.error(`Google Login Error: ${error.message}`, {
-          position: "top-right",
-          autoClose: 2000,
-        });
-      });
+  const inputStyle = {
+    "& .MuiOutlinedInput-root": {
+      borderRadius: "16px",
+      color: theme === "dark" ? "#f1f5f9" : "#1e293b",
+      "& fieldset": { borderColor: theme === "dark" ? "#334155" : "#e2e8f0" },
+      "&:hover fieldset": { borderColor: "#0ea5e9" },
+    },
+    "& .MuiInputLabel-root": {
+      color: theme === "dark" ? "#94a3b8" : "#64748b",
+    },
+    "& .MuiOutlinedInput-input": {
+      "&::placeholder": {
+        color: theme === "dark" ? "#94a3b8" : "#64748b",
+        opacity: 1,
+      },
+    },
+    "& .MuiInputAdornment-root": {
+      color: theme === "dark" ? "#94a3b8" : "#64748b",
+    },
   };
 
   return (
-    <div className="w-full flex flex-col items-center sm:gap-5 gap-2 px-5 py-10">
+    <div
+      className={`w-full min-h-screen py-16 transition-colors duration-300 ${
+        theme === "dark"
+          ? "bg-slate-950 text-gray-300"
+          : "bg-gray-50 text-gray-700"
+      }`}
+    >
       <HeadProvider>
         <Title>Login || ScholarStream</Title>
       </HeadProvider>
-      <div className="flex flex-col gap-1 items-center text-center md:mt-8 mt-4">
-        <h3 className="md:text-3xl text-2xl italic font-medium">Login</h3>
-        <p className="text-base font-medium text-cyan-600">
-          Access your account
-        </p>
-      </div>
 
-      <Divider orientation="horizontal" variant="middle" flexItem></Divider>
+      <div className="max-w-2xl mx-auto px-6">
+        <div className="text-center mb-10">
+          <h1
+            className={`md:text-3xl text-2xl font-black mb-3 ${
+              theme === "dark" ? "text-white" : "text-slate-900"
+            }`}
+          >
+            Welcome <span className="text-sky-500">Back</span>
+          </h1>
+          <p className="sm:text-lg text-sm opacity-70">
+            Access your account to continue
+          </p>
+        </div>
 
-      <div className="flex flex-col gap-4 max-w-lg mx-auto w-full">
-        <form
-          onSubmit={handleLoginSubmit}
-          className="flex flex-col justify-center gap-4 mt-4 w-full"
+        <div
+          className={`p-8 md:p-12 rounded-4xl border transition-all duration-300 ${
+            theme === "dark"
+              ? "bg-slate-900 border-slate-800 shadow-2xl shadow-black/20"
+              : "bg-white border-gray-100 shadow-xl"
+          }`}
         >
-          <TextField
-            name="email"
-            className="w-full"
-            type="email"
-            label="Email"
-            variant="outlined"
-            required
-            autoComplete="username"
-          />
-
-          <div className="w-full relative">
+          <form onSubmit={handleLoginSubmit} className="flex flex-col gap-4">
             <TextField
-              name="password"
-              className="w-full"
-              type={showPassword ? "text" : "password"}
-              label="Password"
+              fullWidth
+              label="Email"
+              type="email"
               variant="outlined"
               required
-              autoComplete="current-password"
-              slotProps={{
-                input: {
-                  startAdornment: (
-                    <InputAdornment position="start"></InputAdornment>
-                  ),
-                },
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              sx={inputStyle}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MdOutlineMailOutline className="text-xl" />
+                  </InputAdornment>
+                ),
               }}
             />
 
-            {!showPassword ? (
-              <MdVisibility
-                onClick={() => setShowPassword(true)}
-                className="absolute top-4 right-3 text-2xl cursor-pointer"
-              />
-            ) : (
-              <MdVisibilityOff
-                onClick={() => setShowPassword(false)}
-                className="absolute top-4 right-3 text-2xl cursor-pointer"
-              />
-            )}
-          </div>
+            <TextField
+              fullWidth
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              variant="outlined"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              sx={inputStyle}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <MdLockOutline className="text-xl" />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <MdVisibilityOff className="text-2xl" />
+                      ) : (
+                        <MdVisibility className="text-2xl" />
+                      )}
+                    </button>
+                  </InputAdornment>
+                ),
+              }}
+            />
 
-          <div className="w-full flex flex-col items-center">
-            <button className="w-full mx-auto py-2 font-semibold rounded-lg border-2 text-white bg-linear-to-tr from-purple-500 to-teal-500 transition hover:shadow-lg">
-              <p className="text-lg font-semibold py-1">Login</p>
+            <button className="w-full py-4 bg-linear-to-r from-purple-600 to-teal-500 text-white font-black rounded-2xl shadow-lg hover:shadow-teal-500/20 transition-all hover:scale-[1.01] active:scale-95">
+              Login Now
             </button>
+          </form>
+
+          {/* Quick Login Section */}
+          <div className="mt-8 space-y-4">
+            <p className="text-center text-xs font-bold uppercase tracking-widest opacity-40">
+              Quick Access (Auto-fill)
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => fillCredentials("admin@mailinator.com")}
+                className="flex items-center gap-2 px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-500 rounded-xl transition-all font-bold text-sm"
+              >
+                <MdAdminPanelSettings /> Admin
+              </button>
+              <button
+                onClick={() => fillCredentials("moderator@mailinator.com")}
+                className="flex items-center gap-2 px-4 py-2 bg-orange-500/10 hover:bg-orange-500/20 text-orange-500 rounded-xl transition-all font-bold text-sm"
+              >
+                <MdSecurity /> Moderator
+              </button>
+              <button
+                onClick={() => fillCredentials("student@mailinator.com")}
+                className="flex items-center gap-2 px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-500 rounded-xl transition-all font-bold text-sm"
+              >
+                <MdSchool /> Student
+              </button>
+            </div>
           </div>
-        </form>
 
-        <p className="text-xl font-bold text-center">or</p>
+          <div className="my-8 flex items-center gap-4">
+            <Divider className="flex-1 opacity-10" />
+            <span className="text-sm font-bold opacity-30 uppercase tracking-widest">
+              OR
+            </span>
+            <Divider className="flex-1 opacity-10" />
+          </div>
 
-        <button
-          onClick={handleGoogleMethod}
-          className="w-full mx-auto border-2 border-cyan-500 bg-white rounded-lg text-xl font-semibold transition hover:shadow-lg hover:border-cyan-600 py-2 flex items-center justify-center gap-2 text-black"
-        >
-          <FcGoogle className="text-2xl" />
-          Google
-        </button>
-        <p className="font-medium">
-          New user?{" "}
-          <Link
-            className="font-semibold text-sky-700 hover:text-purple-600 duration-300"
-            to={"/register"}
+          <button
+            onClick={handleGoogleMethod}
+            className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl border font-bold transition-all hover:scale-[1.01] ${
+              theme === "dark"
+                ? "bg-slate-800 border-slate-700 hover:bg-slate-700"
+                : "bg-white border-gray-200 hover:bg-gray-50"
+            }`}
           >
-            Register
-          </Link>
-        </p>
-        <Link
-          className="font-semibold text-orange-700 hover:text-green-600 duration-300"
-          to={"/forgot"}
-        >
-          Forgot Password?
-        </Link>
+            <FcGoogle className="text-2xl" /> Login with Google
+          </button>
+
+          <div className="mt-10 text-center space-y-3">
+            <p className="text-sm opacity-60">
+              New to ScholarStream?{" "}
+              <Link
+                to="/register"
+                className="text-sky-500 font-bold hover:underline"
+              >
+                Register
+              </Link>
+            </p>
+            <Link
+              to="/forgot"
+              className="block text-xs font-black uppercase tracking-widest text-orange-500 opacity-60 hover:opacity-100 transition-opacity"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
