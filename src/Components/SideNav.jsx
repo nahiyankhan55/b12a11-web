@@ -65,7 +65,7 @@ const SideNav = ({ role }) => {
   };
 
   return (
-    <div className="w-full h-full sm:p-4 p-2 space-y-2 flex flex-col border-r-2">
+    <div className="w-full h-full sm:p-4 p-2 space-y-2 flex flex-col border-r">
       {/* Sidebar Links */}
       <div className="flex-1 space-y-1">
         {renderLinks().map((item) => {
@@ -76,17 +76,17 @@ const SideNav = ({ role }) => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-300 ${
+                `flex items-center gap-3 px-2 py-2 lg:w-full w-fit rounded-xl font-bold transition-all duration-300 ${
                   isActive
                     ? "bg-sky-500 text-white shadow-lg shadow-sky-500/30"
                     : "text-slate-500 hover:bg-sky-500/10 hover:text-sky-500"
                 }`
               }
             >
-              <span className="text-2xl">{item.icon}</span>
+              <span className="sm:text-2xl text-xl">{item.icon}</span>
 
               {/* desktop text */}
-              <span className="lg:flex hidden lg:text-sm xl:text-base tracking-tight">
+              <span className="lg:flex hidden text-sm xl:text-base tracking-tight">
                 {item.label}
               </span>
             </NavLink>
