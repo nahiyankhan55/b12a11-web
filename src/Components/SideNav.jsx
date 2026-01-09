@@ -100,7 +100,7 @@ const SideNav = ({ role }) => {
       {/* Back Home Link */}
       <Link
         to={"/"}
-        className="flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-slate-500 hover:bg-indigo-500/10 hover:text-indigo-500 transition-all duration-300"
+        className="flex items-center gap-3 px-2 py-2 rounded-xl font-bold text-slate-500 hover:bg-indigo-500/10 hover:text-indigo-500 transition-all duration-300"
       >
         <FaHome className="text-2xl" />
         <span className="lg:flex hidden lg:text-sm xl:text-base tracking-tight">
