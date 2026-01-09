@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { Link } from "react-router";
 import slide1 from "./../../../assets/scholar1.webp";
 import slide2 from "./../../../assets/scholar2.webp";
-import slide3 from "./../../../assets/scholar3.webp";
+import slide3 from "./../../../assets/scholar3.png";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 
@@ -76,16 +76,15 @@ const HeaderSlider = () => {
           <div className={slideContentRightStyle}>
             <div className="text-right text-white max-w-lg space-y-4">
               <h2 className="text-2xl md:text-4xl font-bold">
-                Browse <span className="text-sky-400">Top Rated</span>{" "}
-                Scholarships
+                Browse <span className="text-sky-400">Our Reviews</span>{" "}
               </h2>
               <p className="text-sm md:text-base opacity-90 hidden sm:block">
-                Fully funded opportunities across the globe. Find the one that
-                fits your goals.
+                See how students from all over the world transformed their lives
+                with fully funded scholarships through our platform.
               </p>
               <div className="pt-2">
                 <Link
-                  to="/all-scholarships"
+                  to="/stories"
                   className="bg-sky-500 hover:bg-sky-600 text-white px-6 py-2.5 rounded-full font-bold transition-transform hover:scale-105 inline-block shadow-lg"
                 >
                   Explore More
@@ -105,15 +104,15 @@ const HeaderSlider = () => {
           <div className={slideContentRightStyle}>
             <div className="text-right text-white max-w-lg space-y-4">
               <h2 className="text-2xl md:text-4xl font-bold">
-                Learn About <span className="text-purple-400">Our Mission</span>
+                About <span className="text-purple-400">Our Terms</span>
               </h2>
               <p className="text-sm md:text-base opacity-90 hidden sm:block">
-                Connecting talent with opportunity. Discover how ScholarStream
-                is changing lives.
+                We value your trust. Learn about our clear terms, user policies,
+                and how we protect your academic journey.
               </p>
               <div className="pt-2">
                 <Link
-                  to="/about"
+                  to="/terms"
                   className="bg-white text-purple-700 hover:bg-gray-100 px-6 py-2.5 rounded-full font-bold transition-transform hover:scale-105 inline-block shadow-lg"
                 >
                   Learn More
