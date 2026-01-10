@@ -1,23 +1,6 @@
 import { useState, useContext } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
-import {
-  Container,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Button,
-  Stack,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Divider,
-  Box,
-} from "@mui/material";
 import { toast } from "react-toastify";
 import WebContext from "../../../../Context/WebContext";
 import useAxiosPublic from "../../../../Hook/useAxiosPublic";
@@ -25,52 +8,47 @@ import useAxiosSecure from "../../../../Hook/useAxiosSecure";
 import DataLoader from "../../../../Components/DataLoader";
 import Swal from "sweetalert2";
 import { HeadProvider, Title } from "react-head";
+import {
+  MdVisibility,
+  MdEdit,
+  MdDelete,
+  MdPayment,
+  MdRateReview,
+  MdClose,
+  MdSchool,
+  MdLocationOn,
+  MdStar,
+} from "react-icons/md";
 
 const MyApplications = () => {
-  const { user } = useContext(WebContext);
+  const { user, theme } = useContext(WebContext);
   const axiosPublic = useAxiosPublic();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
-  const [selected, setSelected] = useState(null); // application object for details modal
-  const [deletingId, setDeletingId] = useState(null); // id being deleted (for disabling)
-
-  // review states
+  const [selected, setSelected] = useState(null);
   const [reviewOpen, setReviewOpen] = useState(false);
   const [selectedForReview, setSelectedForReview] = useState(null);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
-  // GET: user's applications (useQuery per requirement)
   const {
     data: applications = [],
     isLoading,
     isError,
-    refetch,
   } = useQuery({
     queryKey: ["applications", user?.email],
     queryFn: async () => {
-      // server expects ?email=<userEmail>
       const res = await axiosPublic.get("/applications/user", {
         params: { email: user?.email },
       });
       return res.data;
     },
     enabled: !!user?.email,
-    retry: 1,
   });
-  console.log(applications);
 
-  // details modal
-  const handleView = (app) => {
-    setSelected(app);
-  };
-  const handleClose = () => setSelected(null);
-
-  // go edit page
   const handleEdit = (app) => {
-    // only editable when status is 'pending'
     if (app.status !== "pending") {
       toast.info("Only pending applications can be edited.");
       return;
@@ -78,88 +56,46 @@ const MyApplications = () => {
     navigate(`/dashboard/edit-application/${app._id}`, { state: { app } });
   };
 
-  // payment failed
   const handlePay = (app) => {
-    // only allow pay when pending + paymentStatus unpaid
-    if (app.applicationStatus !== "pending" || app.payment === "Paid") {
+    if (app.status !== "pending" || app.payment === "Paid") {
       toast.info("Payment not required or already completed.");
       return;
     }
-    // pass scholarship id or whole scholarship if you stored it
     navigate("/payment", {
       state: { scholarship: app.scholar || { _id: app.scholarshipId } },
     });
   };
 
-  // delete application
   const handleDelete = async (app) => {
     if (app.status !== "pending") {
       toast.info("Only pending applications can be deleted.");
       return;
     }
 
-    const confirmDelete = await Swal.fire({
-      title: "Are you sure?",
-      text: "This application will be permanently deleted!",
+    const result = await Swal.fire({
+      title: "Delete Application?",
+      text: "This action cannot be undone.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonColor: "#ef4444",
+      background: theme === "dark" ? "#0f172a" : "#fff",
+      color: theme === "dark" ? "#fff" : "#000",
     });
 
-    if (!confirmDelete.isConfirmed) return;
-
-    try {
-      setDeletingId(app._id);
-
-      const res = await axiosSecure.delete(`/applications/${app._id}`);
-
-      if (res.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: "Deleted!",
-          text: "Your application has been deleted.",
-          timer: 1500,
-          showConfirmButton: false,
-        });
-
+    if (result.isConfirmed) {
+      try {
+        await axiosSecure.delete(`/applications/${app._id}`);
+        toast.success("Application deleted");
         queryClient.invalidateQueries(["applications", user?.email]);
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Failed!",
-          text: "Could not delete application.",
-        });
+      } catch (err) {
+        toast.error("Failed to delete");
       }
-    } catch (err) {
-      console.error(err);
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Something went wrong while deleting.",
-      });
-    } finally {
-      setDeletingId(null);
     }
   };
 
-  // review modal
-  const openReviewModal = (app) => {
-    setSelectedForReview(app);
-    setReviewOpen(true);
-  };
-  const closeReviewModal = () => {
-    setReviewOpen(false);
-    setSelectedForReview(null);
-    setRating(0);
-    setComment("");
-  };
-
-  // post review
   const handleSubmitReview = async () => {
-    if (!rating || !comment || !selectedForReview.scholar.postedUserEmail) {
-      toast.error("Please give rating & comment.");
+    if (!rating || !comment) {
+      toast.error("Please provide rating & comment.");
       return;
     }
 
@@ -172,321 +108,305 @@ const MyApplications = () => {
         userEmail: user.email,
         postByEmail: selectedForReview.scholar.postedUserEmail,
         userImage: user.photoURL,
-        ratingPoint: rating,
+        ratingPoint: Number(rating),
         reviewComment: comment,
         reviewDate: new Date(),
       };
 
-      const res = await axiosSecure.post("/reviews", reviewData);
-
-      if (res.status === 200) {
-        toast.success("Review added!");
-        queryClient.invalidateQueries(["applications", user.email]);
-        closeReviewModal();
-      }
+      await axiosSecure.post("/reviews", reviewData);
+      toast.success("Thank you for your review!");
+      queryClient.invalidateQueries(["applications", user.email]);
+      setReviewOpen(false);
     } catch (error) {
-      console.error(error);
-      toast.error("Failed to submit review.");
+      toast.error("Submission failed.");
     }
   };
 
-  if (!user?.email) {
-    return (
-      <Container maxWidth="lg" className="py-10">
-        <Typography className="text-center">
-          Please login to see your applications.
-        </Typography>
-      </Container>
-    );
-  }
-
   if (isLoading) return <DataLoader />;
 
-  if (isError)
-    return (
-      <Container maxWidth="lg" className="py-10">
-        <Typography className="text-center text-red-600">
-          Failed to load your applications.
-        </Typography>
-      </Container>
-    );
-
   return (
-    <Container maxWidth="lg" className="py-8">
+    <div className="w-full p-2 sm:p-4 md:p-8">
       <HeadProvider>
         <Title>My Applications || ScholarStream</Title>
       </HeadProvider>
-      <Typography className="font-semibold md:text-3xl! sm:text-2xl! text-xl! mb-5!">
-        My Applications
-      </Typography>
+
+      <div className="mb-8">
+        <h2
+          className={`text-3xl font-black tracking-tight ${
+            theme === "dark" ? "text-white" : "text-slate-900"
+          }`}
+        >
+          My Applications
+        </h2>
+        <p className="opacity-60 font-medium">
+          Track and manage your scholarship requests
+        </p>
+      </div>
 
       {applications.length === 0 ? (
-        <Box className="py-10 text-center">
-          <Typography>No applications yet.</Typography>
-        </Box>
+        <div className="py-20 text-center opacity-40 italic">
+          No applications found.
+        </div>
       ) : (
-        <Grid
-          className="grid! lg:grid-cols-3! md:grid-cols-2! grid-cols-1! gap-5"
-          container
-          spacing={3}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {applications.map((app) => (
-            <Grid item xs={12} md={6} lg={4} key={app._id}>
-              <Card className="h-full flex flex-col">
-                {app.scholar?.universityImage ? (
-                  <CardMedia
-                    component="img"
-                    className="max-h-40 h-full"
-                    image={app.scholar.universityImage}
-                    alt={app.scholar.universityName}
-                  />
-                ) : (
-                  <Box className="h-40 bg-gray-100 flex items-center justify-center">
-                    No Image
-                  </Box>
-                )}
-
-                <CardContent className="flex-1">
-                  <Typography variant="h6" gutterBottom>
-                    {app.scholarshipName ||
-                      app.scholar?.scholarshipName ||
-                      "Untitled Scholarship"}
-                  </Typography>
-
-                  <Typography variant="body2" color="textSecondary">
-                    {app.universityName || app.scholar?.universityName}
-                  </Typography>
-
-                  <Stack
-                    direction="row"
-                    className="mt-3 mb-2 flex items-center gap-2 flex-wrap"
-                    flexWrap="wrap"
+            <div
+              key={app._id}
+              className={`group rounded-[2.5rem] overflow-hidden border transition-all hover:shadow-2xl ${
+                theme === "dark"
+                  ? "bg-slate-900 border-slate-800 hover:shadow-sky-500/10"
+                  : "bg-white border-gray-100 hover:shadow-gray-200"
+              }`}
+            >
+              {/* Image Header */}
+              <div className="h-44 relative overflow-hidden">
+                <img
+                  src={
+                    app.scholar?.universityImage ||
+                    "https://via.placeholder.com/400x200"
+                  }
+                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  alt=""
+                />
+                <div className="absolute top-4 right-4">
+                  <span
+                    className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg ${
+                      app.status === "completed"
+                        ? "bg-emerald-500 text-white"
+                        : app.status === "processing"
+                        ? "bg-amber-500 text-white"
+                        : "bg-sky-500 text-white"
+                    }`}
                   >
-                    <Chip
-                      label={app.degree || app.scholar?.degree || "Degree"}
-                      size="small"
-                    />
-                    <Chip
-                      label={
-                        app.scholarshipCategory ||
-                        app.scholar?.scholarshipCategory ||
-                        "Category"
-                      }
-                      size="small"
-                    />
-                    <Chip
-                      label={`Status: ${app.status || "pending"}`}
-                      size="small"
-                      color={
-                        app.status === "completed"
-                          ? "success"
-                          : app.status === "processing"
-                          ? "warning"
-                          : "default"
-                      }
-                    />
-                    <Chip
-                      label={`Payment: ${app.payment || "unpaid"}`}
-                      size="small"
-                    />
-                  </Stack>
+                    {app.status || "pending"}
+                  </span>
+                </div>
+              </div>
 
-                  <Typography variant="body2" className="mt-3">
-                    Applied:{" "}
-                    {new Date(
-                      app.appliedDate ||
-                        app.applicationDate ||
-                        app.createdAt ||
-                        Date.now()
-                    ).toLocaleDateString()}
-                  </Typography>
-                </CardContent>
+              {/* Content */}
+              <div className="p-6">
+                <div className="flex items-center gap-2 text-sky-500 text-[10px] font-black uppercase tracking-wider mb-2">
+                  <MdSchool /> {app.scholar?.degree || "Degree"}
+                </div>
+                <h3 className="font-black text-lg leading-tight mb-1 line-clamp-1">
+                  {app.scholarshipName}
+                </h3>
+                <div className="flex items-center gap-1 text-xs opacity-60 mb-4 font-bold uppercase tracking-tighter">
+                  <MdLocationOn /> {app.universityName}
+                </div>
 
-                <Divider />
-
-                <Stack direction="row" className="p-3 flex flex-wrap gap-1">
-                  {/* Details Button */}
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={() => handleView(app)}
+                <div className="flex flex-wrap gap-2 mb-6">
+                  <span className="bg-slate-500/10 px-3 py-1 rounded-xl text-[10px] font-bold uppercase">
+                    {app.scholar.scholarshipCategory}
+                  </span>
+                  <span
+                    className={`px-3 py-1 rounded-xl text-[10px] font-bold uppercase ${
+                      app.payment === "Paid"
+                        ? "bg-emerald-500/10 text-emerald-500"
+                        : "bg-red-500/10 text-red-500"
+                    }`}
                   >
-                    Details
-                  </Button>
+                    {app.payment || "Unpaid"}
+                  </span>
+                </div>
 
-                  {/* If application is completed → show Add Review */}
+                {/* Actions */}
+                <div className="flex gap-2 border-t border-slate-500/10 pt-4">
+                  <button
+                    onClick={() => setSelected(app)}
+                    className="flex-1 p-3 bg-slate-500/10 rounded-2xl hover:bg-slate-500 hover:text-white transition-all flex justify-center shadow-sm"
+                    title="Details"
+                  >
+                    <MdVisibility size={20} />
+                  </button>
+
                   {app.status === "completed" ? (
-                    <Button
-                      size="small"
-                      color="success"
-                      variant="contained"
-                      onClick={() => openReviewModal(app)}
+                    <button
+                      onClick={() => {
+                        setSelectedForReview(app);
+                        setReviewOpen(true);
+                      }}
+                      className="flex-2 bg-emerald-500 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20"
                     >
-                      Add Review
-                    </Button>
+                      <MdRateReview /> Add Review
+                    </button>
                   ) : (
                     <>
-                      <Button
-                        size="small"
-                        variant="contained"
+                      <button
                         onClick={() => handleEdit(app)}
+                        className="flex-1 p-3 bg-sky-500/10 text-sky-500 rounded-2xl hover:bg-sky-500 hover:text-white transition-all flex justify-center"
+                        title="Edit"
                       >
-                        Edit
-                      </Button>
-
-                      <Button
-                        size="small"
-                        color="primary"
-                        disabled={app.payment === "Paid"}
-                        variant="contained"
+                        <MdEdit size={20} />
+                      </button>
+                      <button
                         onClick={() => handlePay(app)}
+                        disabled={app.payment === "Paid"}
+                        className="flex-1 p-3 bg-amber-500/10 text-amber-500 rounded-2xl hover:bg-amber-500 hover:text-white disabled:opacity-20 transition-all flex justify-center"
+                        title="Pay"
                       >
-                        Pay
-                      </Button>
-
-                      <Button
-                        size="small"
-                        color="error"
-                        variant="contained"
+                        <MdPayment size={20} />
+                      </button>
+                      <button
                         onClick={() => handleDelete(app)}
-                        disabled={deletingId === app._id}
+                        className="flex-1 p-3 bg-red-500/10 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all flex justify-center"
+                        title="Delete"
                       >
-                        Delete
-                      </Button>
+                        <MdDelete size={20} />
+                      </button>
                     </>
                   )}
-                </Stack>
-              </Card>
-            </Grid>
+                </div>
+              </div>
+            </div>
           ))}
-        </Grid>
+        </div>
       )}
 
-      {/* Details dialog */}
-      <Dialog
-        open={Boolean(selected)}
-        onClose={handleClose}
-        maxWidth="md"
-        fullWidth
-      >
-        <DialogTitle>Application Details</DialogTitle>
-        <DialogContent dividers>
-          {selected && (
-            <>
-              <Typography variant="h6">
-                {selected.scholarshipName ||
-                  selected.scholarship?.scholarshipName}
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                {selected.universityName ||
-                  selected.scholarship?.universityName}
-              </Typography>
-
-              <Stack
-                direction="row"
-                className="mt-2 flex items-center gap-2 flex-wrap mb-2"
-              >
-                <Chip
-                  label={`Degree: ${
-                    selected.degree || selected.scholarship?.degree || "-"
-                  }`}
-                />
-                <Chip
-                  label={`Category: ${
-                    selected.scholarshipCategory ||
-                    selected.scholarship?.scholarshipCategory ||
-                    "-"
-                  }`}
-                />
-                <Chip label={`Payment: ${selected.paymentStatus || "-"}`} />
-                <Chip label={`Status: ${selected.applicationStatus || "-"}`} />
-              </Stack>
-
-              <Divider className="my-3" />
-
-              <Typography variant="subtitle2">Applicant:</Typography>
-              <Typography>
-                {selected.userName} (
-                {selected.applicant || selected.userEmail || user.email})
-              </Typography>
-
-              <Divider className="my-3" />
-
-              <Typography variant="subtitle2">Moderator Feedback:</Typography>
-              <Typography>{selected.feedback || "No feedback yet."}</Typography>
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Close</Button>
-          <Button
-            onClick={() => {
-              if (selected) handleEdit(selected);
-              handleClose();
-            }}
-            variant="contained"
+      {/* Details Modal */}
+      {selected && (
+        <div className="fixed inset-0 z-100 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div
+            className={`w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden ${
+              theme === "dark"
+                ? "bg-slate-900 border border-slate-800"
+                : "bg-white"
+            }`}
           >
-            Edit
-          </Button>
-        </DialogActions>
-      </Dialog>
+            <div className="p-10 relative">
+              <button
+                onClick={() => setSelected(null)}
+                className="absolute top-8 right-8 p-2 rounded-full hover:bg-red-500/10 text-red-500 transition-colors"
+              >
+                <MdClose size={28} />
+              </button>
 
-      {/* Review dialog */}
-      <Dialog
-        open={reviewOpen}
-        onClose={closeReviewModal}
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle>Add Your Review</DialogTitle>
-        <DialogContent dividers>
-          {selectedForReview && (
-            <>
-              <Stack direction="row" spacing={2} alignItems="center">
-                <img
-                  src={user.photoURL}
-                  alt="user"
-                  className="w-14 h-14 rounded-full object-cover"
-                />
-                <Box>
-                  <Typography>{user.displayName}</Typography>
-                  <Typography variant="body2" color="gray">
-                    {user.email}
-                  </Typography>
-                </Box>
-              </Stack>
+              <h3 className="text-3xl font-black mb-1 leading-tight">
+                {selected.scholarshipName}
+              </h3>
+              <p className="opacity-60 font-bold uppercase text-xs mb-8">
+                {selected.universityName}
+              </p>
 
-              <Divider className="my-4" />
+              <div className="grid grid-cols-2 gap-8 mb-8">
+                <div>
+                  <span className="text-[10px] font-black uppercase opacity-40 block mb-1">
+                    Status
+                  </span>
+                  <p className="font-bold text-sm uppercase tracking-widest text-sky-500">
+                    {selected.status || "Pending"}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase opacity-40 block mb-1">
+                    Applied Date
+                  </span>
+                  <p className="font-bold text-sm">
+                    {new Date(selected.appliedDate).toLocaleDateString()}
+                  </p>
+                </div>
+              </div>
 
-              <Typography className="mb-2">Rating (1–5):</Typography>
-              <input
-                type="number"
-                min="1"
-                max="5"
-                value={rating}
-                onChange={(e) => setRating(e.target.value)}
-                className="border p-2 rounded w-full"
-              />
+              <div className="p-6 rounded-3xl bg-slate-500/5 border border-slate-500/10">
+                <span className="text-[10px] font-black uppercase opacity-40 block mb-2">
+                  Moderator Feedback
+                </span>
+                <p className="text-sm italic opacity-80 leading-relaxed">
+                  {selected.feedback || "No feedback from moderator yet."}
+                </p>
+              </div>
 
-              <Typography className="mt-4 mb-2">Your Comment:</Typography>
+              <div className="mt-10 flex gap-4">
+                <button
+                  onClick={() => {
+                    handleEdit(selected);
+                    setSelected(null);
+                  }}
+                  className="flex-1 py-4 bg-sky-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-sky-500/20"
+                >
+                  Edit Application
+                </button>
+                <button
+                  onClick={() => setSelected(null)}
+                  className="flex-1 py-4 bg-slate-500/10 rounded-2xl font-black uppercase text-[10px] tracking-widest"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Review Modal */}
+      {reviewOpen && (
+        <div className="fixed inset-0 z-110 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-in zoom-in duration-300">
+          <div
+            className={`w-full max-w-md rounded-[2.5rem] p-8 ${
+              theme === "dark"
+                ? "bg-slate-900 border border-slate-800"
+                : "bg-white shadow-2xl"
+            }`}
+          >
+            <h4 className="text-xl font-black mb-6 flex items-center gap-2">
+              <MdRateReview className="text-sky-500" /> Share Your Experience
+            </h4>
+
+            <div className="mb-6">
+              <span className="text-[10px] font-black uppercase opacity-40 block mb-2">
+                Rating (1-5)
+              </span>
+              <div className="flex gap-2">
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <button
+                    key={num}
+                    onClick={() => setRating(num)}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                      rating >= num
+                        ? "bg-amber-500 text-white shadow-lg"
+                        : "bg-slate-500/10"
+                    }`}
+                  >
+                    <MdStar size={20} />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <span className="text-[10px] font-black uppercase opacity-40 block mb-2">
+                Your Thoughts
+              </span>
               <textarea
-                rows="4"
-                className="border p-2 rounded w-full"
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
-              ></textarea>
-            </>
-          )}
-        </DialogContent>
+                className={`w-full h-32 p-4 rounded-2xl border outline-none transition-all ${
+                  theme === "dark"
+                    ? "bg-slate-800 border-slate-700 text-white focus:border-sky-500"
+                    : "bg-gray-50 border-gray-100 focus:bg-white focus:border-sky-500"
+                }`}
+                placeholder="Tell us about the process..."
+              />
+            </div>
 
-        <DialogActions>
-          <Button onClick={closeReviewModal}>Cancel</Button>
-          <Button variant="contained" onClick={handleSubmitReview}>
-            Submit Review
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setReviewOpen(false)}
+                className="flex-1 py-3 font-black uppercase text-[10px] opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmitReview}
+                className="flex-1 py-3 bg-sky-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-sky-500/20"
+              >
+                Submit Review
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
