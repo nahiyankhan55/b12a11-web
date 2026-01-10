@@ -132,7 +132,7 @@ const MyApplications = () => {
 
       <div className="mb-8">
         <h2
-          className={`text-3xl font-black tracking-tight ${
+          className={`md:text-3xl text-2xl font-black tracking-tight ${
             theme === "dark" ? "text-white" : "text-slate-900"
           }`}
         >
